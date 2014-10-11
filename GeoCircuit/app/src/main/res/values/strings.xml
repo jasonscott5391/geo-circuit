@@ -2,7 +2,9 @@
 <resources>
 
     <string name="app_name">Geo Circuit</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="action_dashboard">Dashboard</string>
+    <string name="action_trip_manager">Trip Manager</string>
+    <string name="action_near_me">Near Me</string>
     <string name="action_settings">Settings</string>
 
 </resources>
