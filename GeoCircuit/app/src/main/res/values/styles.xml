@@ -1,8 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Theme.Geo_circuit" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_geo_circuit</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Geo_circuit</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Geo_circuit</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Geo_circuit</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Geo_circuit</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Geo_circuit</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_geo_circuit</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_geo_circuit</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Geo_circuit</item>
+        
+        
+    </style>
+
+    <style name="ActionBar.Solid.Geo_circuit" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@drawable/ab_background_textured_geo_circuit</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_geo_circuit</item>
+        <item name="android:backgroundSplit">@drawable/ab_background_textured_geo_circuit</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Geo_circuit</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Geo_circuit" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@drawable/ab_transparent_geo_circuit</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Geo_circuit</item>
+    </style>
+
+    <style name="PopupMenu.Geo_circuit" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_geo_circuit</item>	
+    </style>
+
+    <style name="DropDownListView.Geo_circuit" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_geo_circuit</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Geo_circuit" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_geo_circuit</item>
+    </style>
+
+    <style name="DropDownNav.Geo_circuit" parent="@android:style/Widget.Holo.Light.Spinner">
+        <item name="android:background">@drawable/spinner_background_ab_geo_circuit</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_geo_circuit</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_geo_circuit</item>
+    </style>
+    
+    <style name="ProgressBar.Geo_circuit" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_geo_circuit</item>
+    </style>
+    
+    <style name="ActionButton.CloseMode.Geo_circuit" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_geo_circuit</item>
+    </style>
+
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Geo_circuit.Widget" parent="@android:style/Theme.Holo">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Geo_circuit</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Geo_circuit</item>
     </style>
 
 </resources>
