@@ -9,4 +9,58 @@
     tools:context=".MainActivity">
 
 
+    <TextView
+        android:id="@+id/text_dashboard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/action_dashboard"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/button_dashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_dashboard"
+        android:background="@drawable/ic_dashboard"
+        android:paddingBottom="12dp"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="12dp" />
+
+    <TextView
+        android:id="@+id/text_trip_manager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/button_dashboard"
+
+        android:text="@string/action_trip_manager"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/button_trip_manager"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_trip_manager"
+        android:background="@drawable/ic_trip_manager" />
+
+    <TextView
+        android:id="@+id/text_near_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/button_dashboard"
+        android:layout_toRightOf="@id/text_trip_manager"
+        android:text="@string/action_near_me"
+        android:textSize="24sp"
+        android:paddingLeft="48dp"/>
+
+    <Button
+        android:id="@+id/button_near_me"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/button_trip_manager"
+        android:layout_below="@id/text_near_me"
+        android:background="@drawable/ic_near_me"/>
+
+
 </RelativeLayout>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <CheckBoxPreference
+        android:key="pref_sync"
+        android:title="@string/pref_passcode"
+        android:summary="@string/pref_passcode_summ"
+        android:defaultValue="false" />
+    <ListPreference
+        android:key="pref_unit_type"
+        android:title="@string/pref_units"
+        android:dialogTitle="@string/pref_units"
+        android:entries="@array/pref_unit_type"
+        android:defaultValue="@string/pref_def_unit" />
+</PreferenceScreen>
