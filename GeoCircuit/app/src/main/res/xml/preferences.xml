@@ -5,12 +5,15 @@
     <CheckBoxPreference
         android:key="pref_sync"
         android:title="@string/pref_passcode"
-        android:summary="@string/pref_passcode_summ"
-        android:defaultValue="false" />
+        android:summary="@string/pref_passcode_summary"
+        android:defaultValue="false"
+        />
     <ListPreference
         android:key="pref_unit_type"
         android:title="@string/pref_units"
         android:dialogTitle="@string/pref_units"
         android:entries="@array/pref_unit_type"
-        android:defaultValue="@string/pref_def_unit" />
+        android:entryValues="@array/pref_unit_values"
+        android:summary="@string/pref_unit_summary"
+        android:defaultValue="@string/pref_default_unit" />
 </PreferenceScreen>

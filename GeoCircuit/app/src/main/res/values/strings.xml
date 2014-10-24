@@ -3,19 +3,22 @@
 
     <string name="app_name">Geo Circuit</string>
     <string name="action_dashboard">Dashboard</string>
-    <string name="action_trip_manager">Trip Manager</string>
+    <string name="action_circuit_manager">Circuit Manager</string>
     <string name="action_near_me">Near Me</string>
     <string name="action_settings">Settings</string>
     <string name="pref_passcode">Passcode Lock</string>
-    <string name="pref_passcode_summ">password protect your data</string>
+    <string name="pref_passcode_summary">Require password for access</string>
     <string name="pref_units">Units</string>
-    <string name="pref_def_unit">imperial</string>
+    <string name="pref_default_unit">United States Customary Units</string>
+    <string name="pref_unit_summary">Units of measurement</string>
 
     <string-array name="pref_unit_type">
-        <item
-            >metric</item>
-        <item
-            >imperial</item>
+        <item>United States Customary Units</item>
+        <item>International System of Units</item>
+    </string-array>
+    <string-array name="pref_unit_values">
+        <item>0</item>
+        <item>1</item>
     </string-array>
 
 
