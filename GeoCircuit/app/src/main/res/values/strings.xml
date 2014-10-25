@@ -11,6 +11,8 @@
     <string name="pref_units">Units</string>
     <string name="pref_default_unit">United States Customary Units</string>
     <string name="pref_unit_summary">Units of measurement</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
 
     <string-array name="pref_unit_type">
         <item>United States Customary Units</item>
