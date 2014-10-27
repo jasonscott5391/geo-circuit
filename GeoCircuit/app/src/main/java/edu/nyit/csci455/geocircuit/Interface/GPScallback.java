@@ -3,7 +3,7 @@ import android.location.Location;
 /**
  * Created by Matt on 10/25/2014.
  */
-public interface GpsCall
+public interface GPScallback
 
 {
     public abstract void onGPSUpdate(Location location);
