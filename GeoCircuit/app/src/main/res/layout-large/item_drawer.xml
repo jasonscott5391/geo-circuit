@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/item_drawer_image"
         android:layout_centerHorizontal="true"
-        android:textColor="#FF0000"
+        android:textColor="@color/geo_red"
         android:textSize="24sp"/>
 
 </RelativeLayout>

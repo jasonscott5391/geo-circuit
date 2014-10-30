@@ -6,6 +6,7 @@
     <string name="action_circuit_manager">Circuit Manager</string>
     <string name="action_near_me">Near Me</string>
     <string name="action_settings">Settings</string>
+    <string name="action_circuits">Circuit(s)</string>
     <string name="pref_passcode">Passcode Lock</string>
     <string name="pref_passcode_summary">Require password for access</string>
     <string name="pref_units">Units</string>

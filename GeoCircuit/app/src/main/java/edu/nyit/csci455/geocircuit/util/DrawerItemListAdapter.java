@@ -17,6 +17,7 @@ import edu.nyit.csci455.geocircuit.R;
 public class DrawerItemListAdapter extends BaseAdapter {
 
     private Activity mActivity;
+
     private static LayoutInflater sInflater;
 
     public DrawerItemListAdapter(Activity activity) {
