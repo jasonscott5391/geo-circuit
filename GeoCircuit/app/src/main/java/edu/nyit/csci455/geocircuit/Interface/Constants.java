@@ -13,5 +13,10 @@ public interface Constants {
     public static final int HOUR_MULTIPLIER = 3600;   // 1 sec=1/3600 hr
     public static final double UNIT_MULTIPLIERS[] = {0.001, 0.000621371192};
 
+    public static final String[] FEATURES = {"Dashboard", "Circuit Manager", "Near Me" };
+    public static final int DASHBOARD = 0;
+    public static final int CIRCUIT_MANAGER = 1;
+    public static final int NEAR_ME = 2;
+
 
 }

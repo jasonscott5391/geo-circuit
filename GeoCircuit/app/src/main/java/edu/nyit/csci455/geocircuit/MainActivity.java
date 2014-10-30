@@ -1,6 +1,7 @@
 package edu.nyit.csci455.geocircuit;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -10,6 +11,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import edu.nyit.csci455.geocircuit.Interface.Constants;
+import edu.nyit.csci455.geocircuit.util.DrawerItemListAdapter;
 
 
 public class MainActivity extends Activity {
@@ -22,13 +26,15 @@ public class MainActivity extends Activity {
 
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private CharSequence mDrawerTitle;
-
     private SettingsFragment mSettings;
 
     private CharSequence mTitle;
 
     private DrawerItemClickListener mDrawerItemClickListener;
+
+    private SharedPreferences mSharedPreferences;
+
+    private CharSequence mCurrentFeature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,16 @@ public class MainActivity extends Activity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mSharedPreferences = getSharedPreferences("user_preferences", 0);
+        mCurrentFeature = mSharedPreferences.getString(
+                "current_feature",
+                Constants.FEATURES[Constants.DASHBOARD]);
     }
 
     @Override
@@ -104,8 +120,6 @@ public class MainActivity extends Activity {
 
         mDrawerList = (ListView) findViewById(R.id.drawer_list);
 
-        mDrawerTitle = getTitle();
-
         mDrawerToggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout,
                 R.drawable.ic_drawer,
@@ -114,13 +128,13 @@ public class MainActivity extends Activity {
 
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getActionBar().setTitle(mTitle);
+                getActionBar().setTitle(mCurrentFeature);
                 invalidateOptionsMenu();
             }
 
             public void onDrawerOpened(View view) {
                 super.onDrawerOpened(view);
-                getActionBar().setTitle(mDrawerTitle);
+                getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu();
             }
         };
@@ -138,7 +152,7 @@ public class MainActivity extends Activity {
 
     public void selectItem(int position) {
         //TODO (jasonscott) Switch statement to handle different cases of onClick.
-
+        mCurrentFeature = Constants.FEATURES[position];
         mDrawerLayout.closeDrawer(mDrawerList);
     }
 
