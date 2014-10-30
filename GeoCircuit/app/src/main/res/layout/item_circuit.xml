@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/item_circuit_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:text="@string/test_circuit_time"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/item_circuit_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/item_circuit_time"
+        android:padding="4dp"
+        android:text="@string/test_circuit_date"
+        android:textSize="14sp"
+        android:textStyle="italic" />
+
+    <TextView
+        android:id="@+id/item_circuit_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_circuit_time"
+        android:paddingLeft="8dp"
+        android:text="@string/test_circuit_name"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/item_circuit_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:padding="4dp"
+        android:text="@string/test_circuit_duration"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/item_circuit_distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/item_circuit_duration"
+        android:padding="4dp"
+        android:text="@string/test_circuit_distance"
+        android:textSize="14sp" />
+
+</RelativeLayout>
