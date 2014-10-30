@@ -5,16 +5,16 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/item_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/item_drawer_image"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:id="@+id/item_text"
+        android:id="@+id/item_drawer_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/item_image"
+        android:layout_below="@id/item_drawer_image"
         android:layout_centerHorizontal="true"
         android:textColor="#FF0000"
         android:textSize="24sp"/>
