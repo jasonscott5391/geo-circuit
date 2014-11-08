@@ -3,4 +3,66 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
+
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/food"
+        android:text="Food"
+        android:textSize="24dp"
+        android:layout_above="@+id/life"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ffdafff3"
+        android:backgroundTint="#ffaefdff"
+        android:height="50dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/life"
+        android:text="Life"
+        android:textSize="24dp"
+        android:layout_above="@+id/shopping"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ffdafff3"
+        android:backgroundTint="#ffaefdff"
+        android:height="50dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/shopping"
+        android:text="Shopping"
+        android:layout_above="@+id/attractions"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="24dp"
+        android:background="#ffdafff3"
+        android:backgroundTint="#ffaefdff"
+        android:height="50dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/attractions"
+        android:text="Attractions"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="false"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:background="#ffdafff3"
+        android:backgroundTint="#ffaefdff"
+        android:height="50dp"
+        android:textSize="24dp" />
+
 </RelativeLayout>
