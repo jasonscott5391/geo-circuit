@@ -18,5 +18,9 @@ public interface Constants {
     public static final int CIRCUIT_MANAGER = 1;
     public static final int NEAR_ME = 2;
 
+    public static final String STATUS_BAR_HEIGHT = "status_bar_height";
+    public static final String DIMEN = "dimen";
+    public static final String ANDROID = "android";
+
 
 }
