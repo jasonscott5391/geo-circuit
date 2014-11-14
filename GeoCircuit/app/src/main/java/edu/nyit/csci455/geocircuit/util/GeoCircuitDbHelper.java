@@ -6,6 +6,8 @@ import net.sqlcipher.database.SQLiteOpenHelper;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import edu.nyit.csci455.geocircuit.Interface.Constants;
+import edu.nyit.csci455.geocircuit.normalized.Circuit;
+import edu.nyit.csci455.geocircuit.normalized.Location;
 
 /**
  * <p>Title: GeoCircuitDbHelper.java </p>
@@ -93,4 +95,45 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
+
+    // Insertions
+
+    /**
+     *
+     * @param location
+     */
+    public void insertLocation(Location location) {
+        insertLocationIntoDb(location);
+    }
+
+    /**
+     *
+     * @param location
+     */
+    private void insertLocationIntoDb(Location location) {
+
+    }
+
+    /**
+     *
+     * @param circuit
+     */
+    public void insertCircuit(Circuit circuit) {
+        insertCircuitIntoDb(circuit);
+    }
+
+    /**
+     *
+     * @param circuit
+     */
+    private void insertCircuitIntoDb(Circuit circuit) {
+
+    }
+
+    // Retrieval
+
+    // Modification
+
+    // Deletion
 }
