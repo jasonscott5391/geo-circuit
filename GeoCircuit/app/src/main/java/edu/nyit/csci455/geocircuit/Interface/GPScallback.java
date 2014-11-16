@@ -1,4 +1,4 @@
-package edu.nyit.csci455.geocircuit.Interface;
+package app.src.main.java.edu.nyit.csci455.geocircuit.Interface;
 
 import android.location.Location;
 

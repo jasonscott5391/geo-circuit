@@ -4,7 +4,7 @@ package app.src.main.java.edu.nyit.csci455.geocircuit;
  * Created by Matt on 10/30/2014.
  */
 
-import Interface.GPScallback;
+import app.src.main.java.edu.nyit.csci455.geocircuit.Interface.GPScallback;
 
 import java.util.List;
 
