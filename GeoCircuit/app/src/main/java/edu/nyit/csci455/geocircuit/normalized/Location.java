@@ -14,25 +14,25 @@ public class Location implements Serializable {
 
     private int locationId;
 
-    private Date date;
+    private long date;
 
     private float latitude;
 
     private float longitude;
 
-    public int getlocationId() {
+    public int getLocationId() {
         return locationId;
     }
 
-    public void setlocationId(int locationId) {
+    public void setLocationId(int locationId) {
         this.locationId = locationId;
     }
 
-    public Date getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(long date) {
         this.date = date;
     }
 
