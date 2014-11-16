@@ -18,7 +18,16 @@
     <string name="text_life">Life</string>
     <string name="text_shopping">Shopping</string>
     <string name="text_attractions">Attractions</string>
-
+    <!-- Strings for Speed fragment -->
+    <string name="info">Waiting for GPS..</string>
+    <string name="HUD_menu_name">Hud Mode</string>
+    <string name="HUD_ON">Hud ON</string>
+    <string name="HUD_OFF">Hud OFF</string>
+    <string name="about_menu_name">About</string>
+    <string name="about_message">A Basic speedometer</string>
+    <string name="unit_km">Kilometer</string>
+    <string name="unit_miles">Miles Per Hour</string>
+    <string name="setting_unit">Measurement Unit</string>
    <!-- Strings for testing -->
     <string name="test_circuit_date">10/22/14 </string>
     <string name="test_circuit_time">8:43 AM - 9:02 AM</string>

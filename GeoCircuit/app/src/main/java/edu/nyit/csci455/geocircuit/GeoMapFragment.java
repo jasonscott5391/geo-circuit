@@ -10,7 +10,7 @@ import android.widget.RelativeLayout;
 
 import com.google.android.gms.maps.MapFragment;
 
-import edu.nyit.csci455.geocircuit.Interface.Constants;
+import edu.nyit.csci455.geocircuit.Interface.*;
 
 /**
  * <p>Title: GeoMapFragment.java</p>
