@@ -12,10 +12,20 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import edu.nyit.csci455.geocircuit.Interface.Constants;
+import edu.nyit.csci455.geocircuit.normalized.Circuit;
+import edu.nyit.csci455.geocircuit.normalized.Location;
 import edu.nyit.csci455.geocircuit.util.DrawerItemListAdapter;
+import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
-
+/**
+ *
+ */
 public class MainActivity extends FragmentActivity {
 
     private GeoMapFragment mMapFragment;
@@ -84,6 +94,8 @@ public class MainActivity extends FragmentActivity {
                 "current_feature",
                 Constants.DASHBOARD);
         selectItem(mCurrentFeature);
+        GeoCircuitDbHelper dbHelper = GeoCircuitDbHelper.getInstance(this);
+        populateDatabaseTest(dbHelper);
     }
 
     @Override
@@ -192,6 +204,80 @@ public class MainActivity extends FragmentActivity {
             default:
                 break;
         }
+    }
+
+    private void populateDatabaseTest(GeoCircuitDbHelper dbHelper) {
+        ArrayList testLocations = readInTestLocations();
+        for (Object location : testLocations) {
+            dbHelper.insertLocation((Location) location);
+        }
+
+        ArrayList testCircuits = readInTestCircuits(dbHelper);
+        String[] testCircuitNames = { "Work", "School", "Home", "Hell", "The End" };
+        int i = 0;
+        for (Object circuit : testCircuits) {
+            dbHelper.insertCircuit((Circuit) circuit, testCircuitNames[i++]);
+        }
+    }
+
+    private ArrayList readInTestLocations() {
+        BufferedReader bufferedReader =
+                new BufferedReader(
+                        new InputStreamReader(
+                                this.getResources()
+                                        .openRawResource(R.raw.test_locations)));
+
+        ArrayList locationList = new ArrayList();
+
+        try {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                Location location = new Location();
+                location.setLocationId(Integer.parseInt(parts[0]));
+                location.setLatitude(Float.parseFloat(parts[1]));
+                location.setLongitude(Float.parseFloat(parts[2]));
+                location.setDate(Long.parseLong(parts[3]) * 1000);
+
+                locationList.add(location);
+            }
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return locationList;
+    }
+
+    private ArrayList readInTestCircuits(GeoCircuitDbHelper dbHelper) {
+
+
+        BufferedReader bufferedReader =
+                new BufferedReader(
+                        new InputStreamReader(
+                                this.getResources()
+                                        .openRawResource(R.raw.test_circuits)));
+
+        ArrayList circuitList = new ArrayList();
+
+        try {
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                Circuit circuit = new Circuit();
+                circuit.setCircuitId(Integer.parseInt(parts[0]));
+                circuit.setStartLocation(dbHelper.retrieveLocationById(Integer.parseInt(parts[1])));
+                circuit.setEndLocation(dbHelper.retrieveLocationById(Integer.parseInt(parts[2])));
+
+                circuitList.add(circuit);
+            }
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
+        return circuitList;
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
