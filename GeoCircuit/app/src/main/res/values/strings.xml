@@ -14,6 +14,10 @@
     <string name="pref_unit_summary">Units of measurement</string>
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
+    <string name="text_food">Food</string>
+    <string name="text_life">Life</string>
+    <string name="text_shopping">Shopping</string>
+    <string name="text_attractions">Attractions</string>
 
    <!-- Strings for testing -->
     <string name="test_circuit_date">10/22/14 </string>

@@ -1,9 +1,9 @@
 package edu.nyit.csci455.geocircuit;
 
-import android.app.Activity;
+import android.support.v4.app.Fragment;
 
 /**
  * Created by jasonscott on 10/23/14.
  */
-public class NearMeActivity extends Activity {
+public class NearMeFragment extends Fragment {
 }

@@ -17,5 +17,34 @@ public interface Constants {
     public static final int CIRCUIT_MANAGER = 1;
     public static final int NEAR_ME = 2;
 
+    public static final String STATUS_BAR_HEIGHT = "status_bar_height";
+    public static final String DIMEN = "dimen";
+    public static final String ANDROID = "android";
 
+    // SQLite Database
+
+    // Table names
+    public static final String LOCATION_TABLE = "locations";
+    public static final String CIRCUITS_TABLE = "circuits";
+
+    // Column names
+    public static final String LOCATION_ID = "location_id";
+    public static final String DATE_TIME = "date_time";
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+
+    public static final String CIRCUIT_ID = "circuit_id";
+    public static final String CIRCUIT_NAME = "circuit_name";
+    public static final String START_LOCATION = "start_location";
+    public static final String END_LOCATION = "end_location";
+
+    // SQLite types
+    public static final String INTEGER_TYPE = "INTEGER";
+    public static final String REAL_TYPE = "REAL";
+    public static final String TEXT_TYPE = "TEXT";
+    public static final String COMMA_SEP = ",";
+    public static final String PRIMARY_KEY = "PRIMARY KEY";
+
+    public static final String CREATE_TABLE = "CREATE TABLE ";
+    public static final String SECRET = "secret";
 }

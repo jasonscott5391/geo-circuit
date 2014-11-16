@@ -1,6 +1,6 @@
 package edu.nyit.csci455.geocircuit;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -16,7 +16,11 @@ import edu.nyit.csci455.geocircuit.Interface.Constants;
 import edu.nyit.csci455.geocircuit.util.DrawerItemListAdapter;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
+
+    private GeoMapFragment mMapFragment;
+
+    private CircuitFragment mCircuitFragment;
 
     private DrawerLayout mDrawerLayout;
 
@@ -34,7 +38,7 @@ public class MainActivity extends Activity {
 
     private SharedPreferences mSharedPreferences;
 
-    private CharSequence mCurrentFeature;
+    private int mCurrentFeature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,18 @@ public class MainActivity extends Activity {
 
         mTitle = getTitle();
 
+        mMapFragment = (GeoMapFragment) getFragmentManager().findFragmentById(R.id.map);
+
         mSettings = new SettingsFragment();
+
+        if (mMapFragment == null) {
+            mMapFragment = new GeoMapFragment();
+        }
+
+        getFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_layout, mMapFragment)
+                .commit();
 
         //TODO (jasonscott) Change other Activities to Fragments.
 
@@ -65,9 +80,10 @@ public class MainActivity extends Activity {
         super.onResume();
 
         mSharedPreferences = getSharedPreferences("user_preferences", 0);
-        mCurrentFeature = mSharedPreferences.getString(
+        mCurrentFeature = mSharedPreferences.getInt(
                 "current_feature",
-                Constants.FEATURES[Constants.DASHBOARD]);
+                Constants.DASHBOARD);
+        selectItem(mCurrentFeature);
     }
 
     @Override
@@ -128,7 +144,7 @@ public class MainActivity extends Activity {
 
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getActionBar().setTitle(mCurrentFeature);
+                getActionBar().setTitle(Constants.FEATURES[mCurrentFeature]);
                 invalidateOptionsMenu();
             }
 
@@ -150,10 +166,32 @@ public class MainActivity extends Activity {
         mDrawerList.setOnItemClickListener(mDrawerItemClickListener);
     }
 
-    public void selectItem(int position) {
+    /**
+     * @param position
+     */
+    private void selectItem(int position) {
         //TODO (jasonscott) Switch statement to handle different cases of onClick.
-        mCurrentFeature = Constants.FEATURES[position];
+        mCurrentFeature = position;
         mDrawerLayout.closeDrawer(mDrawerList);
+
+        switch (position) {
+            case Constants.DASHBOARD:
+                break;
+            case Constants.CIRCUIT_MANAGER:
+                if (mCircuitFragment == null) {
+                    mCircuitFragment = new CircuitFragment();
+                }
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_layout, mCircuitFragment)
+                        .commit();
+                break;
+            case Constants.NEAR_ME:
+                break;
+
+            default:
+                break;
+        }
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

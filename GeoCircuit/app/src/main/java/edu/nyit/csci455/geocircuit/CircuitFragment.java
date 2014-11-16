@@ -1,7 +1,9 @@
 package edu.nyit.csci455.geocircuit;
 
-import android.app.ListFragment;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +11,16 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 
 /**
- * Created by jasonscott on 10/23/14.
+ * <p>Title: CircuitFragment.java</p>
+ * <p>Description: </p>
+ *
+ * @author jasonscott
  */
-public class CircuitFragment extends ListFragment {
+public class CircuitFragment extends Fragment {
 
     private ListView mCircuitList;
 
@@ -27,11 +34,17 @@ public class CircuitFragment extends ListFragment {
 
     private TextView mCircuitListHeaderText;
 
+    private Point mDimensions;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         sInflater = getActivity().getLayoutInflater();
         mCircuitListHeader = sInflater.inflate(R.layout.item_circuit_header, null, true);
         mCircuitListHeaderText = (TextView) mCircuitListHeader.findViewById(R.id.item_circuit_header);
+        mDimensions = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(mDimensions);
+
     }
 
     @Override
@@ -41,11 +54,17 @@ public class CircuitFragment extends ListFragment {
         View view;
 
         view = inflater.inflate(R.layout.fragment_circuit, container, false);
+        LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                (mDimensions.y / 3));
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        view.setLayoutParams(layoutParams);
+
         mCircuitList = (ListView) view.findViewById(R.id.list_circuit);
-        mCircuitList.addHeaderView(mCircuitListHeader);
 
         mCircuitListAdapter = new CircuitListAdapter();
         mCircuitList.setAdapter(mCircuitListAdapter);
+
+        mCircuitList.addHeaderView(mCircuitListHeader);
 
         mCircuitListHeaderText.setText(mCircuitListAdapter.getCount() + " Circuit(s)");
 
@@ -80,7 +99,7 @@ public class CircuitFragment extends ListFragment {
             View view = convertView;
 
             if (view == null) {
-                sInflater.inflate(R.layout.item_circuit, null);
+                view = sInflater.inflate(R.layout.item_circuit, null);
             }
 
             TextView time = (TextView) view.findViewById(R.id.item_circuit_time);
