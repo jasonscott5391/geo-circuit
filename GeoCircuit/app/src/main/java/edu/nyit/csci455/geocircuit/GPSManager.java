@@ -1,12 +1,8 @@
-package app.src.main.java.edu.nyit.csci455.geocircuit;
+package edu.nyit.csci455.geocircuit;
 
 /**
  * Created by Matt on 10/30/2014.
  */
-
-import app.src.main.java.edu.nyit.csci455.geocircuit.Interface.GPScallback;
-
-import java.util.List;
 
 import android.content.Context;
 import android.location.Criteria;
@@ -14,6 +10,11 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import java.util.List;
+import edu.nyit.csci455.geocircuit.Interface.GPScallback;
+
+
+
 
 public class GPSManager
 {

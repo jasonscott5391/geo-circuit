@@ -1,4 +1,4 @@
-package app.src.main.java.edu.nyit.csci455.geocircuit.Settings;
+package edu.nyit.csci455.geocircuit.Settings;
 
 /**
  * Created by Matt on 11/15/2014.

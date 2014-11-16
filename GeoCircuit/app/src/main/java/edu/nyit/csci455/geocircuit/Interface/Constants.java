@@ -1,4 +1,4 @@
-package app.src.main.java.edu.nyit.csci455.geocircuit.Interface;
+package edu.nyit.csci455.geocircuit.Interface;
 /**
  * Created by Matt on 10/26/2014.
  */

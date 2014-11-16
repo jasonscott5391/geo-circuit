@@ -1,4 +1,4 @@
-package app.src.main.java.edu.nyit.csci455.geocircuit;
+package edu.nyit.csci455.geocircuit;
 
 /**
  * Created by Matt on 11/15/2014.
@@ -8,10 +8,11 @@ package app.src.main.java.edu.nyit.csci455.geocircuit;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import app.src.main.java.edu.nyit.csci455.geocircuit.Interface.Constants;
-import app.src.main.java.edu.nyit.csci455.geocircuit.Interface.GPScallback;
-import app.src.main.java.edu.nyit.csci455.geocircuit.GPSManager;
-import app.src.main.java.edu.nyit.csci455.geocircuit.Settings.AppSettings;
+import edu.nyit.csci455.geocircuit.Interface.Constants;
+import edu.nyit.csci455.geocircuit.Interface.GPScallback;
+import edu.nyit.csci455.geocircuit.GPSManager;
+import android.R;
+import edu.nyit.csci455.geocircuit.Settings.AppSettings;
 import android.app.Fragment;
 import android.app.AlertDialog;
 import android.content.Context;
