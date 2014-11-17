@@ -113,8 +113,8 @@ import android.widget.TextView;
 
         @Override
         public boolean onCreateOptionsMenu(Menu menu) {              //Create an options menu in the app
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.menu, menu);
+            MenuInflater inflater = getActivity().getMenuInflater();
+            inflater.inflate(R.menu.speed, menu);
 
             return true;
         }
