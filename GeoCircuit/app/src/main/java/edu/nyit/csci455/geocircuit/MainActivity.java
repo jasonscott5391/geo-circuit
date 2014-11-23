@@ -1,16 +1,28 @@
 package edu.nyit.csci455.geocircuit;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.Intent;
+import android.content.IntentSender;
 import android.support.v4.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.location.LocationClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +38,9 @@ import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 /**
  *
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener {
 
     private GeoMapFragment mMapFragment;
 
@@ -47,6 +61,8 @@ public class MainActivity extends FragmentActivity {
     private DrawerItemClickListener mDrawerItemClickListener;
 
     private SharedPreferences mSharedPreferences;
+
+    private LocationClient mLocationClient;
 
     private int mCurrentFeature;
 
@@ -75,7 +91,8 @@ public class MainActivity extends FragmentActivity {
                 .replace(R.id.main_layout, mMapFragment)
                 .commit();
 
-        //TODO (jasonscott) Change other Activities to Fragments.
+        mLocationClient = new LocationClient(this, this, this);
+
 
     }
 
@@ -93,9 +110,23 @@ public class MainActivity extends FragmentActivity {
         mCurrentFeature = mSharedPreferences.getInt(
                 "current_feature",
                 Constants.DASHBOARD);
-        selectItem(mCurrentFeature);
+
         GeoCircuitDbHelper dbHelper = GeoCircuitDbHelper.getInstance(this);
         populateDatabaseTest(dbHelper);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mLocationClient.connect();
+
+    }
+
+    @Override
+    protected void onStop() {
+        mLocationClient.disconnect();
+        super.onStop();
     }
 
     @Override
@@ -188,6 +219,8 @@ public class MainActivity extends FragmentActivity {
 
         switch (position) {
             case Constants.DASHBOARD:
+
+                mMapFragment.dashboardMode(mLocationClient.getLastLocation());
                 break;
             case Constants.CIRCUIT_MANAGER:
                 if (mCircuitFragment == null) {
@@ -213,7 +246,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         ArrayList testCircuits = readInTestCircuits(dbHelper);
-        String[] testCircuitNames = { "Work", "School", "Home", "Hell", "The End" };
+        String[] testCircuitNames = {"Work", "School", "Home", "Hell", "The End"};
         int i = 0;
         for (Object circuit : testCircuits) {
             dbHelper.insertCircuit((Circuit) circuit, testCircuitNames[i++]);
@@ -278,6 +311,146 @@ public class MainActivity extends FragmentActivity {
         }
 
         return circuitList;
+    }
+
+    // Define a DialogFragment that displays the error dialog
+    public static class ErrorDialogFragment extends DialogFragment {
+        // Global field to contain the error dialog
+        private Dialog mDialog;
+
+        // Default constructor. Sets the dialog field to null
+        public ErrorDialogFragment() {
+            super();
+            mDialog = null;
+        }
+
+        // Set the dialog to display
+        public void setDialog(Dialog dialog) {
+            mDialog = dialog;
+        }
+
+        // Return a Dialog to the DialogFragment.
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return mDialog;
+        }
+    }
+
+    /* Creates a dialog for an error message */
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt("error_dialog", errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getFragmentManager(), "errordialog");
+    }
+
+    /*
+    * Handle results returned to the FragmentActivity
+    * by Google Play services
+    */
+    @Override
+    protected void onActivityResult(
+            int requestCode, int resultCode, Intent data) {
+        // Decide what to do based on the original request code
+        switch (requestCode) {
+            case Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST:
+            /*
+             * If the result code is Activity.RESULT_OK, try
+             * to connect again
+             */
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                    /*
+                     * Try the request again
+                     */
+                        servicesConnected();
+                        break;
+                }
+        }
+    }
+
+    private boolean servicesConnected() {
+        // Check that Google Play services is available
+        int resultCode =
+                GooglePlayServicesUtil.
+                        isGooglePlayServicesAvailable(this);
+        // If Google Play services is available
+        if (ConnectionResult.SUCCESS == resultCode) {
+            // In debug mode, log the status
+            Log.d("Location Updates",
+                    "Google Play services is available.");
+            // Continue
+            return true;
+            // Google Play services was not available for some reason.
+            // resultCode holds the error code.
+        } else {
+            // Get the error dialog from Google Play services
+            Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                    resultCode,
+                    this,
+                    Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+
+            // If Google Play services can provide an error dialog
+            if (errorDialog != null) {
+                // Create a new DialogFragment for the error dialog
+                ErrorDialogFragment errorFragment =
+                        new ErrorDialogFragment();
+                // Set the dialog in the DialogFragment
+                errorFragment.setDialog(errorDialog);
+                // Show the error dialog in the DialogFragment
+                errorFragment.show(getFragmentManager(),
+                        "Location Updates");
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+        servicesConnected();
+        selectItem(mCurrentFeature);
+    }
+
+    @Override
+    public void onDisconnected() {
+        Toast.makeText(this, "Disconnected. Please re-connect.",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+  /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(
+                        this,
+                        Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+                /*
+                 * Thrown if Google Play services canceled the original
+                 * PendingIntent
+                 */
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error.
+             */
+            showErrorDialog(connectionResult.getErrorCode());
+        }
+
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

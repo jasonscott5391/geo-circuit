@@ -47,4 +47,7 @@ public interface Constants {
 
     public static final String CREATE_TABLE = "CREATE TABLE ";
     public static final String SECRET = "secret";
+
+    public final static int
+            CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 }

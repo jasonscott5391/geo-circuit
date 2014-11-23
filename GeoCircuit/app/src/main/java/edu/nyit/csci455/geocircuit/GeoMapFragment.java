@@ -1,6 +1,7 @@
 package edu.nyit.csci455.geocircuit;
 
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -8,7 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import edu.nyit.csci455.geocircuit.Interface.*;
 
@@ -20,6 +25,8 @@ import edu.nyit.csci455.geocircuit.Interface.*;
  */
 public class GeoMapFragment extends MapFragment {
 
+    private GoogleMap mGoogleMap;
+
     private Point mDimensions;
 
     @Override
@@ -27,6 +34,7 @@ public class GeoMapFragment extends MapFragment {
         super.onCreate(savedInstanceState);
         mDimensions = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(mDimensions);
+
     }
 
     @Override
@@ -46,6 +54,8 @@ public class GeoMapFragment extends MapFragment {
                 ((2 * mDimensions.y) / 3) - actionBarHeight - statusBarHeight);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
         view.setLayoutParams(layoutParams);
+
+        mGoogleMap = this.getMap();
 
         return view;
     }
@@ -67,5 +77,11 @@ public class GeoMapFragment extends MapFragment {
         }
 
         return height;
+    }
+
+    public void dashboardMode(Location location) {
+//        mGoogleMap.setMyLocationEnabled(true);
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 }
