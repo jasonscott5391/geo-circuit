@@ -3,8 +3,13 @@ package edu.nyit.csci455.geocircuit;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v4.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -17,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -43,7 +47,8 @@ import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        SensorEventListener {
 
     private GeoMapFragment mMapFragment;
 
@@ -69,7 +74,19 @@ public class MainActivity extends FragmentActivity implements
 
     private LocationRequest mLocationRequest;
 
+    private SensorManager mSensorManager;
+
+    private Sensor mMagnetometer;
+
+    private Sensor mAccelerometer;
+
     private int mCurrentFeature;
+
+    private float mAzimuth;
+
+    private float[] mGravity;
+
+    private float[] mGeoMagnetic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +123,9 @@ public class MainActivity extends FragmentActivity implements
         mLocationRequest.setInterval(Constants.LOC_UPDATE_INTERVAL);
         mLocationRequest.setFastestInterval(Constants.FASTEST_LOC_UPDATE);
 
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
     @Override
@@ -124,7 +144,9 @@ public class MainActivity extends FragmentActivity implements
                 Constants.DASHBOARD);
 
         GeoCircuitDbHelper dbHelper = GeoCircuitDbHelper.getInstance(this);
-//        populateDatabaseTest(dbHelper);
+        populateDatabaseTest(dbHelper);
+        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
     }
 
@@ -140,7 +162,7 @@ public class MainActivity extends FragmentActivity implements
         super.onPause();
         mLocationClient.removeLocationUpdates(this);
         mLocationClient.disconnect();
-
+        mSensorManager.unregisterListener(this);
     }
 
     @Override
@@ -240,7 +262,7 @@ public class MainActivity extends FragmentActivity implements
         switch (position) {
             case Constants.DASHBOARD:
 
-                mMapFragment.dashboardMode(mLocationClient.getLastLocation());
+                mMapFragment.dashboardMode(mLocationClient.getLastLocation(), mAzimuth);
                 mLocationClient.requestLocationUpdates(mLocationRequest, this);
                 break;
             case Constants.CIRCUIT_MANAGER:
@@ -433,15 +455,16 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void onConnected(Bundle bundle) {
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         servicesConnected();
         selectItem(mCurrentFeature);
     }
 
     @Override
     public void onDisconnected() {
-        Toast.makeText(this, "Disconnected. Please re-connect.",
-                Toast.LENGTH_SHORT).show();
+        //TODO (jasonscott) Test case for this.
+//        Toast.makeText(this, "Disconnected. Please re-connect.",
+//                Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -479,14 +502,43 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onLocationChanged(android.location.Location location) {
         if (mCurrentFeature == Constants.DASHBOARD) {
-            mMapFragment.dashboardMode(location);
-            String msg = "Updated Location: " +
-                    Double.toString(location.getLatitude()) + "," +
-                    Double.toString(location.getLongitude());
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            mMapFragment.dashboardMode(location, mAzimuth);
 
-            // TODO (jasonscott) Store location into database if trip being recorded.
+            // TODO (jasonscott) Store location into database if trip is being recorded.
         }
+
+    }
+
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity = event.values.clone();
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            mGeoMagnetic = event.values.clone();
+        }
+
+        float R[] = new float[9];
+        float I[] = new float[9];
+        boolean success = false;
+
+        if (mGravity != null && mGeoMagnetic != null) {
+            success = SensorManager.getRotationMatrix(R, I, mGravity, mGeoMagnetic);
+
+        }
+
+        if (success) {
+            float orientation[] = new float[3];
+            SensorManager.getOrientation(R, orientation);
+            mAzimuth = orientation[0];
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
     }
 

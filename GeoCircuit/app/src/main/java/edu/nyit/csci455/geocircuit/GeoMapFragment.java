@@ -95,17 +95,23 @@ public class GeoMapFragment extends MapFragment {
     /**
      * @param location
      */
-    public void dashboardMode(Location location) {
+    public void dashboardMode(Location location, float azimuth) {
+        float azimuthDegrees = (float) Math.toDegrees(azimuth);
+
+        if (azimuthDegrees < 0.0f) {
+            azimuthDegrees += 360.0f;
+        }
+
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        mGoogleMap.setMyLocationEnabled(false);
         if (mMarker != null) {
             toggleMarker();
         }
         mMarker = mGoogleMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location))
                 .position(latLng)
+                .rotation(azimuthDegrees)
                 .flat(true));
-
-        // TODO (jasonscott) Rotate based on compass heading.
     }
 
     /**
