@@ -3,7 +3,6 @@ package edu.nyit.csci455.geocircuit;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +16,9 @@ import android.widget.RelativeLayout.LayoutParams;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import edu.nyit.csci455.geocircuit.normalized.Circuit;
-import edu.nyit.csci455.geocircuit.normalized.Location;
+import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
 import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
 /**
@@ -149,7 +147,7 @@ public class CircuitFragment extends Fragment {
      * @param end Specified end Location.
      * @return String duration time traveled.
      */
-    private String getCircuitDuration(Location start, Location end) {
+    private String getCircuitDuration(GeoLocation start, GeoLocation end) {
         long difference = start.getDate() - end.getDate();
 
         long seconds = difference / 1000;
@@ -167,7 +165,7 @@ public class CircuitFragment extends Fragment {
      * @param end Specified end Location.
      * @return String distance traveled.
      */
-    private String getCircuitDistance(Location start, Location end) {
+    private String getCircuitDistance(GeoLocation start, GeoLocation end) {
         int earthRadius = 6371;
         double kmToMi = 0.621371;
 

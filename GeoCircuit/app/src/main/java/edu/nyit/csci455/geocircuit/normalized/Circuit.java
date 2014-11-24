@@ -15,9 +15,9 @@ public class Circuit implements Serializable {
 
     private String circuitName;
 
-    private Location startLocation;
+    private GeoLocation startLocation;
 
-    private Location endLocation;
+    private GeoLocation endLocation;
 
     public int getCircuitId() {
         return circuitId;
@@ -35,19 +35,19 @@ public class Circuit implements Serializable {
         this.circuitName = circuitName;
     }
 
-    public Location getStartLocation() {
+    public GeoLocation getStartLocation() {
         return startLocation;
     }
 
-    public void setStartLocation(Location startLocation) {
+    public void setStartLocation(GeoLocation startLocation) {
         this.startLocation = startLocation;
     }
 
-    public Location getEndLocation() {
+    public GeoLocation getEndLocation() {
         return endLocation;
     }
 
-    public void setEndLocation(Location endLocation) {
+    public void setEndLocation(GeoLocation endLocation) {
         this.endLocation = endLocation;
     }
 }

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 import edu.nyit.csci455.geocircuit.Interface.Constants;
 import edu.nyit.csci455.geocircuit.normalized.Circuit;
-import edu.nyit.csci455.geocircuit.normalized.Location;
+import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
 
 /**
  * <p>GeoCircuitDbHelper.java </p>
@@ -117,11 +117,11 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     /**
      * Inserts the specified location into the database.
      *
-     * @param location Specified location.
+     * @param geoLocation Specified location.
      */
-    public void insertLocation(Location location) {
+    public void insertLocation(GeoLocation geoLocation) {
         try {
-            insertLocationIntoDb(location);
+            insertLocationIntoDb(geoLocation);
         } catch (SQLException e) {
             //TODO (jasonscott) Log any errors.
             System.err.println(e.getMessage());
@@ -132,16 +132,16 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     /**
      * Inserts the specified location into the location table using insert or throw.
      *
-     * @param location Specified location.
+     * @param geoLocation Specified location.
      * @throws SQLiteException For errors inserting into the table.
      */
-    private void insertLocationIntoDb(Location location) throws SQLiteException {
+    private void insertLocationIntoDb(GeoLocation geoLocation) throws SQLiteException {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(Constants.LOCATION_ID, location.getLocationId());
-        contentValues.put(Constants.DATE_TIME, location.getDate());
-        contentValues.put(Constants.LATITUDE, location.getLatitude());
-        contentValues.put(Constants.LONGITUDE, location.getLongitude());
+        contentValues.put(Constants.LOCATION_ID, geoLocation.getLocationId());
+        contentValues.put(Constants.DATE_TIME, geoLocation.getDate());
+        contentValues.put(Constants.LATITUDE, geoLocation.getLatitude());
+        contentValues.put(Constants.LONGITUDE, geoLocation.getLongitude());
 
 //      getWritableDatabase(Constants.SECRET)
         getWritableDatabase()
@@ -199,8 +199,8 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
      * @param locationId Specified Location ID
      * @return Returns Location
      */
-    public Location retrieveLocationById(int locationId) {
-        Location location = new Location();
+    public GeoLocation retrieveLocationById(int locationId) {
+        GeoLocation location = new GeoLocation();
 
         String[] columns = {Constants.LOCATION_ID,
                 Constants.DATE_TIME,
@@ -240,7 +240,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
      * @return ArrayList of Location
      */
     public ArrayList retrieveAllLocations() {
-        ArrayList locations = new ArrayList();
+        ArrayList geoLocations = new ArrayList();
 
         Cursor cursor = getReadableDatabase().query(
                 Constants.LOCATION_TABLE,
@@ -253,18 +253,18 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                Location location = new Location();
-                location.setLocationId(cursor.getInt(0));
-                location.setDate(cursor.getLong(1));
-                location.setLatitude(cursor.getFloat(2));
-                location.setLongitude(cursor.getFloat(3));
-                locations.add(location);
+                GeoLocation geoLocation = new GeoLocation();
+                geoLocation.setLocationId(cursor.getInt(0));
+                geoLocation.setDate(cursor.getLong(1));
+                geoLocation.setLatitude(cursor.getFloat(2));
+                geoLocation.setLongitude(cursor.getFloat(3));
+                geoLocations.add(geoLocation);
 
             } while (cursor.moveToNext());
             cursor.close();
         }
 
-        return locations;
+        return geoLocations;
     }
 
     /**

@@ -23,6 +23,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,7 +33,7 @@ import java.util.ArrayList;
 
 import edu.nyit.csci455.geocircuit.Interface.Constants;
 import edu.nyit.csci455.geocircuit.normalized.Circuit;
-import edu.nyit.csci455.geocircuit.normalized.Location;
+import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
 import edu.nyit.csci455.geocircuit.util.DrawerItemListAdapter;
 import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
@@ -40,7 +42,8 @@ import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
  */
 public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener {
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        LocationListener {
 
     private GeoMapFragment mMapFragment;
 
@@ -63,6 +66,8 @@ public class MainActivity extends FragmentActivity implements
     private SharedPreferences mSharedPreferences;
 
     private LocationClient mLocationClient;
+
+    private LocationRequest mLocationRequest;
 
     private int mCurrentFeature;
 
@@ -93,6 +98,13 @@ public class MainActivity extends FragmentActivity implements
 
         mLocationClient = new LocationClient(this, this, this);
 
+        mLocationRequest = new LocationRequest();
+
+        mLocationRequest.setPriority(
+                LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        mLocationRequest.setInterval(Constants.LOC_UPDATE_INTERVAL);
+        mLocationRequest.setFastestInterval(Constants.FASTEST_LOC_UPDATE);
 
     }
 
@@ -112,7 +124,7 @@ public class MainActivity extends FragmentActivity implements
                 Constants.DASHBOARD);
 
         GeoCircuitDbHelper dbHelper = GeoCircuitDbHelper.getInstance(this);
-        populateDatabaseTest(dbHelper);
+//        populateDatabaseTest(dbHelper);
 
     }
 
@@ -120,6 +132,14 @@ public class MainActivity extends FragmentActivity implements
     protected void onStart() {
         super.onStart();
         mLocationClient.connect();
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mLocationClient.removeLocationUpdates(this);
+        mLocationClient.disconnect();
 
     }
 
@@ -221,6 +241,7 @@ public class MainActivity extends FragmentActivity implements
             case Constants.DASHBOARD:
 
                 mMapFragment.dashboardMode(mLocationClient.getLastLocation());
+                mLocationClient.requestLocationUpdates(mLocationRequest, this);
                 break;
             case Constants.CIRCUIT_MANAGER:
                 if (mCircuitFragment == null) {
@@ -230,8 +251,10 @@ public class MainActivity extends FragmentActivity implements
                         .beginTransaction()
                         .replace(R.id.main_layout, mCircuitFragment)
                         .commit();
+                mMapFragment.circuitManagerMode();
                 break;
             case Constants.NEAR_ME:
+                mMapFragment.nearMeMode();
                 break;
 
             default:
@@ -242,7 +265,7 @@ public class MainActivity extends FragmentActivity implements
     private void populateDatabaseTest(GeoCircuitDbHelper dbHelper) {
         ArrayList testLocations = readInTestLocations();
         for (Object location : testLocations) {
-            dbHelper.insertLocation((Location) location);
+            dbHelper.insertLocation((GeoLocation) location);
         }
 
         ArrayList testCircuits = readInTestCircuits(dbHelper);
@@ -260,27 +283,27 @@ public class MainActivity extends FragmentActivity implements
                                 this.getResources()
                                         .openRawResource(R.raw.test_locations)));
 
-        ArrayList locationList = new ArrayList();
+        ArrayList geoLocationList = new ArrayList();
 
         try {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] parts = line.split(",");
 
-                Location location = new Location();
-                location.setLocationId(Integer.parseInt(parts[0]));
-                location.setLatitude(Float.parseFloat(parts[1]));
-                location.setLongitude(Float.parseFloat(parts[2]));
-                location.setDate(Long.parseLong(parts[3]) * 1000);
+                GeoLocation geoLocation = new GeoLocation();
+                geoLocation.setLocationId(Integer.parseInt(parts[0]));
+                geoLocation.setLatitude(Float.parseFloat(parts[1]));
+                geoLocation.setLongitude(Float.parseFloat(parts[2]));
+                geoLocation.setDate(Long.parseLong(parts[3]) * 1000);
 
-                locationList.add(location);
+                geoLocationList.add(geoLocation);
             }
 
         } catch (IOException e) {
             System.err.println(e.getMessage());
         }
 
-        return locationList;
+        return geoLocationList;
     }
 
     private ArrayList readInTestCircuits(GeoCircuitDbHelper dbHelper) {
@@ -449,6 +472,20 @@ public class MainActivity extends FragmentActivity implements
              * user with the error.
              */
             showErrorDialog(connectionResult.getErrorCode());
+        }
+
+    }
+
+    @Override
+    public void onLocationChanged(android.location.Location location) {
+        if (mCurrentFeature == Constants.DASHBOARD) {
+            mMapFragment.dashboardMode(location);
+            String msg = "Updated Location: " +
+                    Double.toString(location.getLatitude()) + "," +
+                    Double.toString(location.getLongitude());
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+
+            // TODO (jasonscott) Store location into database if trip being recorded.
         }
 
     }

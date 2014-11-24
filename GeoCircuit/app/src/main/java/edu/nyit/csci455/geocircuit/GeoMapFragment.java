@@ -9,11 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
-import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import edu.nyit.csci455.geocircuit.Interface.*;
 
@@ -28,6 +30,8 @@ public class GeoMapFragment extends MapFragment {
     private GoogleMap mGoogleMap;
 
     private Point mDimensions;
+
+    private Marker mMarker;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,15 @@ public class GeoMapFragment extends MapFragment {
         return view;
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mMarker != null) {
+            mMarker.remove();
+            mMarker = null;
+        }
+    }
+
     /**
      * Returns the height of the device status bar.
      *
@@ -79,9 +92,49 @@ public class GeoMapFragment extends MapFragment {
         return height;
     }
 
+    /**
+     * @param location
+     */
     public void dashboardMode(Location location) {
-//        mGoogleMap.setMyLocationEnabled(true);
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
+        if (mMarker != null) {
+            toggleMarker();
+        }
+        mMarker = mGoogleMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location))
+                .position(latLng)
+                .flat(true));
+
+        // TODO (jasonscott) Rotate based on compass heading.
     }
+
+    /**
+     *
+     */
+    public void circuitManagerMode() {
+        mGoogleMap.clear();
+        if (mMarker != null) {
+            toggleMarker();
+        }
+    }
+
+    /**
+     *
+     */
+    public void nearMeMode() {
+        mGoogleMap.clear();
+        if (mMarker != null) {
+            toggleMarker();
+        }
+        mGoogleMap.setMyLocationEnabled(true);
+    }
+
+    /**
+     *
+     */
+    private void toggleMarker() {
+        mMarker.remove();
+        mMarker = null;
+    }
+
 }

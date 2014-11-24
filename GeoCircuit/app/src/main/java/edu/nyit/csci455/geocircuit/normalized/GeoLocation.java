@@ -1,7 +1,6 @@
 package edu.nyit.csci455.geocircuit.normalized;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>Location.java</p>
@@ -10,8 +9,7 @@ import java.util.Date;
  *
  * @author jasonscott
  */
-public class Location implements Serializable {
-
+public class GeoLocation implements Serializable {
     private int locationId;
 
     private long date;
@@ -51,4 +49,5 @@ public class Location implements Serializable {
     public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
+
 }
