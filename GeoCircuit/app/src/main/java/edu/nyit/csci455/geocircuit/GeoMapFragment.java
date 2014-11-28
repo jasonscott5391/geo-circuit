@@ -22,7 +22,9 @@ import edu.nyit.csci455.geocircuit.Interface.*;
 
 /**
  * <p>Title: GeoMapFragment.java</p>
- * <p>Description: </p>
+ * <p>GeoCircuit's map for displaying the user travelling in Dashboard, viewing
+ * circuits in Circuit Manager, and displaying user location and location
+ * of desirable locations nearby in Near Me.</p>
  *
  * @author jasonscott
  */
@@ -94,7 +96,10 @@ public class GeoMapFragment extends MapFragment {
     }
 
     /**
-     * @param location
+     * Enables the GeoMap to operate for Dashboard.
+     *
+     * @param location The current location of the user.
+     * @param azimuth  The user's bearing.
      */
     public void dashboardMode(Location location, float azimuth) {
         float azimuthDegrees = (float) Math.toDegrees(azimuth);
@@ -125,7 +130,7 @@ public class GeoMapFragment extends MapFragment {
     }
 
     /**
-     *
+     * Enables the GeoMap to operate for Circuit Manager.
      */
     public void circuitManagerMode() {
         mGoogleMap.clear();
@@ -135,7 +140,7 @@ public class GeoMapFragment extends MapFragment {
     }
 
     /**
-     *
+     * Enables the GeoMap to operate for Near Me.
      */
     public void nearMeMode() {
         mGoogleMap.clear();
@@ -146,7 +151,7 @@ public class GeoMapFragment extends MapFragment {
     }
 
     /**
-     *
+     * Toggles user marker for Dashboard.
      */
     private void toggleMarker() {
         mMarker.remove();

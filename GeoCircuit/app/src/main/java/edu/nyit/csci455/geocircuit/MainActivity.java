@@ -52,6 +52,8 @@ public class MainActivity extends FragmentActivity implements
 
     private GeoMapFragment mMapFragment;
 
+    private DashboardFragment mDashboardFragment;
+
     private CircuitFragment mCircuitFragment;
 
     private DrawerLayout mDrawerLayout;
@@ -69,6 +71,8 @@ public class MainActivity extends FragmentActivity implements
     private DrawerItemClickListener mDrawerItemClickListener;
 
     private SharedPreferences mSharedPreferences;
+
+    private GeoCircuitDbHelper mGeoDbHelper;
 
     private LocationClient mLocationClient;
 
@@ -143,8 +147,8 @@ public class MainActivity extends FragmentActivity implements
                 "current_feature",
                 Constants.DASHBOARD);
 
-        GeoCircuitDbHelper dbHelper = GeoCircuitDbHelper.getInstance(this);
-        populateDatabaseTest(dbHelper);
+        mGeoDbHelper = GeoCircuitDbHelper.getInstance(this);
+        populateDatabaseTest(mGeoDbHelper);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
@@ -261,7 +265,9 @@ public class MainActivity extends FragmentActivity implements
 
         switch (position) {
             case Constants.DASHBOARD:
-
+                if (mDashboardFragment == null) {
+                    mDashboardFragment = new DashboardFragment();
+                }
                 mMapFragment.dashboardMode(mLocationClient.getLastLocation(), mAzimuth);
                 mLocationClient.requestLocationUpdates(mLocationRequest, this);
                 break;
@@ -504,7 +510,13 @@ public class MainActivity extends FragmentActivity implements
         if (mCurrentFeature == Constants.DASHBOARD) {
             mMapFragment.dashboardMode(location, mAzimuth);
 
-            // TODO (jasonscott) Store location into database if trip is being recorded.
+            // TODO (jasonscott) Store location into database if trip is being recorded and interval has passed.
+            // if (mDashboardFragment.isRecordingCircuit() {
+//            GeoLocation geoLocation = new GeoLocation();
+//            geoLocation.setLatitude((float) location.getLatitude());
+//            geoLocation.setLongitude((float) location.getLongitude());
+//                mGeoDbHelper.insertLocation();
+            // }
         }
 
     }
@@ -527,7 +539,6 @@ public class MainActivity extends FragmentActivity implements
 
         if (mGravity != null && mGeoMagnetic != null) {
             success = SensorManager.getRotationMatrix(R, I, mGravity, mGeoMagnetic);
-
         }
 
         if (success) {

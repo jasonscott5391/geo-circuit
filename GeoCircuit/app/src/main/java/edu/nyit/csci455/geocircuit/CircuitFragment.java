@@ -23,7 +23,8 @@ import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
 /**
  * <p>CircuitFragment.java</p>
- * <p></p>
+ * <p>GeoCircuit's Circuit Manager is the tool that allows
+ * user to view past circuits recorded.</p>
  *
  * @author jasonscott
  */
@@ -83,7 +84,63 @@ public class CircuitFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Returns the time duration of circuit between the
+     * specified starting and ending locations.
+     *
+     * @param start Specified start Location.
+     * @param end   Specified end Location.
+     * @return String duration time traveled.
+     */
+    private String getCircuitDuration(GeoLocation start, GeoLocation end) {
+        long difference = start.getDate() - end.getDate();
 
+        long seconds = difference / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        String time = hours % 24 + " hours, " + minutes % 60 + " minutes, " + seconds % 60 + " seconds";
+
+        return time;
+    }
+
+    /**
+     * Returns the distance traveled of a circuit between the
+     * specified starting and ending locations.
+     *
+     * @param start Specified start Location.
+     * @param end   Specified end Location.
+     * @return String distance traveled.
+     */
+    private String getCircuitDistance(GeoLocation start, GeoLocation end) {
+        int earthRadius = 6371;
+        double kmToMi = 0.621371;
+
+        // Difference in latitude and longitude in radians.
+        double dLat = Math.toRadians(end.getLatitude() - start.getLatitude());
+        double dLng = Math.toRadians(end.getLongitude() - start.getLongitude());
+
+        // Convert latitudes to radians.
+        double startlatRads = Math.toRadians(start.getLatitude());
+        double endLatRads = Math.toRadians(end.getLatitude());
+
+        // Calculate the angle
+        double angle = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(startlatRads) * Math.cos(endLatRads);
+
+        // Calculate the angular distance
+        double angularDistance = 2 * Math.atan2(Math.sqrt(angle), Math.sqrt(1 - angle));
+
+        // Convert to kilometers
+        double distanceKm = earthRadius * angularDistance;
+
+        // Convert to Miles
+        double distanceMi = distanceKm * kmToMi;
+
+        return String.format("%.2f", distanceMi);
+    }
+
+    /**
+     * Inner class, adapter for Circuit Manager ListView.
+     */
     private class CircuitListAdapter extends BaseAdapter {
 
         @Override
@@ -141,57 +198,8 @@ public class CircuitFragment extends Fragment {
     }
 
     /**
-     * Returns the time duration of circuit between the
-     * specified starting and ending locations.
-     * @param start Specified start Location.
-     * @param end Specified end Location.
-     * @return String duration time traveled.
+     * Inner class, OnItemClickListener for Circuit Manager ListView.
      */
-    private String getCircuitDuration(GeoLocation start, GeoLocation end) {
-        long difference = start.getDate() - end.getDate();
-
-        long seconds = difference / 1000;
-        long minutes = seconds / 60;
-        long hours = minutes / 60;
-        String time = hours % 24 + " hours, " + minutes % 60 + " minutes, " + seconds % 60 + " seconds";
-
-        return time;
-    }
-
-    /**
-     * Returns the distance traveled of a circuit between the
-     * specified starting and ending locations.
-     * @param start Specified start Location.
-     * @param end Specified end Location.
-     * @return String distance traveled.
-     */
-    private String getCircuitDistance(GeoLocation start, GeoLocation end) {
-        int earthRadius = 6371;
-        double kmToMi = 0.621371;
-
-        // Difference in latitude and longitude in radians.
-        double dLat = Math.toRadians(end.getLatitude() - start.getLatitude());
-        double dLng = Math.toRadians(end.getLongitude() - start.getLongitude());
-
-        // Convert latitudes to radians.
-        double startlatRads = Math.toRadians(start.getLatitude());
-        double endLatRads = Math.toRadians(end.getLatitude());
-
-        // Calculate the angle
-        double angle = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(startlatRads) * Math.cos(endLatRads);
-
-        // Calculate the angular distance
-        double angularDistance = 2 * Math.atan2(Math.sqrt(angle), Math.sqrt(1 - angle));
-
-        // Convert to kilometers
-        double distanceKm = earthRadius * angularDistance;
-
-        // Convert to Miles
-        double distanceMi = distanceKm * kmToMi;
-
-        return String.format("%.2f", distanceMi);
-    }
-
     private class CircuitListOnItemClickListener implements ListView.OnItemClickListener {
 
         @Override
