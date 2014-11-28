@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -103,15 +104,24 @@ public class GeoMapFragment extends MapFragment {
         }
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 18));
         mGoogleMap.setMyLocationEnabled(false);
+
         if (mMarker != null) {
             toggleMarker();
         }
+
         mMarker = mGoogleMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location))
                 .position(latLng)
                 .rotation(azimuthDegrees)
                 .flat(true));
+
+        CameraPosition cameraPosition = CameraPosition.builder()
+                .target(latLng)
+                .zoom(18)
+                .bearing(azimuthDegrees)
+                .build();
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     /**

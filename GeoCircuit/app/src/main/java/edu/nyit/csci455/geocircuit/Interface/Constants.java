@@ -51,7 +51,7 @@ public interface Constants {
     public static final int
             CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
-    public static final int LOC_UPDATE_INTERVAL = 1000 * 5;
+    public static final int LOC_UPDATE_INTERVAL = 1000 * 2;
 
     public static final int FASTEST_LOC_UPDATE = 1000;
 }
