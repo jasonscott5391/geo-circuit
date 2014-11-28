@@ -48,7 +48,8 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
         LocationListener,
-        SensorEventListener {
+        SensorEventListener,
+        CircuitFragment.OnCircuitSelectedListener {
 
     private GeoMapFragment mMapFragment;
 
@@ -296,11 +297,9 @@ public class MainActivity extends FragmentActivity implements
             dbHelper.insertLocation((GeoLocation) location);
         }
 
-        ArrayList testCircuits = readInTestCircuits(dbHelper);
-        String[] testCircuitNames = {"Work", "School", "Home", "Hell", "The End"};
-        int i = 0;
+        ArrayList testCircuits = readInTestCircuits();
         for (Object circuit : testCircuits) {
-            dbHelper.insertCircuit((Circuit) circuit, testCircuitNames[i++]);
+            dbHelper.insertCircuit((Circuit) circuit);
         }
     }
 
@@ -320,9 +319,12 @@ public class MainActivity extends FragmentActivity implements
 
                 GeoLocation geoLocation = new GeoLocation();
                 geoLocation.setLocationId(Integer.parseInt(parts[0]));
-                geoLocation.setLatitude(Float.parseFloat(parts[1]));
-                geoLocation.setLongitude(Float.parseFloat(parts[2]));
-                geoLocation.setDate(Long.parseLong(parts[3]) * 1000);
+                geoLocation.setCircuitId(Integer.parseInt(parts[1]));
+                geoLocation.setDate(Long.parseLong(parts[2]));
+                geoLocation.setSpeed(Float.parseFloat(parts[3]));
+                geoLocation.setLatitude(Float.parseFloat(parts[4]));
+                geoLocation.setLongitude(Float.parseFloat(parts[5]));
+
 
                 geoLocationList.add(geoLocation);
             }
@@ -334,7 +336,7 @@ public class MainActivity extends FragmentActivity implements
         return geoLocationList;
     }
 
-    private ArrayList readInTestCircuits(GeoCircuitDbHelper dbHelper) {
+    private ArrayList readInTestCircuits() {
 
 
         BufferedReader bufferedReader =
@@ -352,8 +354,6 @@ public class MainActivity extends FragmentActivity implements
 
                 Circuit circuit = new Circuit();
                 circuit.setCircuitId(Integer.parseInt(parts[0]));
-                circuit.setStartLocation(dbHelper.retrieveLocationById(Integer.parseInt(parts[1])));
-                circuit.setEndLocation(dbHelper.retrieveLocationById(Integer.parseInt(parts[2])));
 
                 circuitList.add(circuit);
             }
@@ -551,6 +551,11 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    @Override
+    public void onCircuitSelected(Circuit circuit) {
+        mMapFragment.drawCircuit(circuit);
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

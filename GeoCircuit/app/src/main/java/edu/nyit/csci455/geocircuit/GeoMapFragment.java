@@ -17,8 +17,14 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.ArrayList;
 
 import edu.nyit.csci455.geocircuit.Interface.*;
+import edu.nyit.csci455.geocircuit.normalized.Circuit;
+import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
+import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
 /**
  * <p>Title: GeoMapFragment.java</p>
@@ -158,4 +164,33 @@ public class GeoMapFragment extends MapFragment {
         mMarker = null;
     }
 
+    /**
+     * @param circuit
+     */
+    public void drawCircuit(Circuit circuit) {
+        mGoogleMap.clear();
+
+        GeoLocation startGeoLocation = (GeoLocation) circuit.getGeoLocations().get(0);
+        LatLng startLatLng = new LatLng(startGeoLocation.getLatitude(), startGeoLocation.getLongitude());
+
+        CameraPosition cameraPosition = CameraPosition.builder()
+                .target(startLatLng)
+                .zoom(14)
+                .build();
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        PolylineOptions polylineOptions = new PolylineOptions();
+
+        for (Object location : circuit.getGeoLocations()) {
+            GeoLocation geoLocation = (GeoLocation) location;
+
+            LatLng latLng = new LatLng((double) geoLocation.getLatitude(),
+                    (double) geoLocation.getLongitude());
+
+            polylineOptions.add(latLng);
+        }
+
+        mGoogleMap.addPolyline(polylineOptions);
+    }
 }

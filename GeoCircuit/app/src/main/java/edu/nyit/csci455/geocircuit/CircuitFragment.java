@@ -1,5 +1,7 @@
 package edu.nyit.csci455.geocircuit;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,6 +48,23 @@ public class CircuitFragment extends Fragment {
 
     private ArrayList mCircuits;
 
+    private SharedPreferences mSharedPreferences;
+
+    private int mCurrentPosition;
+
+    private OnCircuitSelectedListener mCircuitSelectedListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        try {
+            mCircuitSelectedListener = (OnCircuitSelectedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnCircuitSelectedListener");
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +74,10 @@ public class CircuitFragment extends Fragment {
         mDimensions = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(mDimensions);
         mCircuits = GeoCircuitDbHelper.getInstance(getActivity()).retrieveAllCircuits();
+        mSharedPreferences = getActivity()
+                .getSharedPreferences("user_preferences", 0);
+
+        mCurrentPosition = mSharedPreferences.getInt("current_position", 0);
     }
 
     @Override
@@ -84,6 +107,21 @@ public class CircuitFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    public Circuit getCurrentCircuit() {
+        Circuit circuit = (Circuit) mCircuits.get(mCurrentPosition);
+        return circuit;
+    }
+
     /**
      * Returns the time duration of circuit between the
      * specified starting and ending locations.
@@ -98,7 +136,7 @@ public class CircuitFragment extends Fragment {
         long seconds = difference / 1000;
         long minutes = seconds / 60;
         long hours = minutes / 60;
-        String time = hours % 24 + " hours, " + minutes % 60 + " minutes, " + seconds % 60 + " seconds";
+        String time = hours % 24 + ":" + minutes % 60 + " :" + seconds % 60;
 
         return time;
     }
@@ -174,7 +212,7 @@ public class CircuitFragment extends Fragment {
             TextView durationView = (TextView) view.findViewById(R.id.item_circuit_duration);
             TextView distanceView = (TextView) view.findViewById(R.id.item_circuit_distance);
 
-            Date date = new Date(circuit.getStartLocation().getDate());
+            Date date = new Date(((GeoLocation) circuit.getGeoLocations().get(0)).getDate());
             SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm aaa");
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM d, yyyy");
 
@@ -184,13 +222,13 @@ public class CircuitFragment extends Fragment {
 
             durationView.setText(
                     getCircuitDuration(
-                            circuit.getStartLocation(),
-                            circuit.getEndLocation()));
+                            (GeoLocation) circuit.getGeoLocations().get(0),
+                            (GeoLocation) circuit.getGeoLocations().get(circuit.getGeoLocations().size() - 1)));
             distanceView.setText(
                     String.valueOf(
                             getCircuitDistance(
-                                    circuit.getStartLocation(),
-                                    circuit.getEndLocation()))
+                                    (GeoLocation) circuit.getGeoLocations().get(0),
+                                    (GeoLocation) circuit.getGeoLocations().get(circuit.getGeoLocations().size() - 1)))
                             + " mi");
 
             return view;
@@ -204,8 +242,12 @@ public class CircuitFragment extends Fragment {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // TODO Callback to MainActivity and modify the map.
-            // IF this is even possible.  Need to investigate/research.
+            mCircuitSelectedListener.onCircuitSelected((Circuit) mCircuits.get(position - 1));
+
         }
+    }
+
+    public interface OnCircuitSelectedListener {
+        public void onCircuitSelected(Circuit circuit);
     }
 }

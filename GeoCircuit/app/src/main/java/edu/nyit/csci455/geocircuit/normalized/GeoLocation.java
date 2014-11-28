@@ -10,9 +10,14 @@ import java.io.Serializable;
  * @author jasonscott
  */
 public class GeoLocation implements Serializable {
+
     private int locationId;
 
+    private int circuitId;
+
     private long date;
+
+    private float speed;
 
     private float latitude;
 
@@ -26,12 +31,28 @@ public class GeoLocation implements Serializable {
         this.locationId = locationId;
     }
 
+    public int getCircuitId() {
+        return circuitId;
+    }
+
+    public void setCircuitId(int circuitId) {
+        this.circuitId = circuitId;
+    }
+
     public long getDate() {
         return date;
     }
 
     public void setDate(long date) {
         this.date = date;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 
     public float getLatitude() {

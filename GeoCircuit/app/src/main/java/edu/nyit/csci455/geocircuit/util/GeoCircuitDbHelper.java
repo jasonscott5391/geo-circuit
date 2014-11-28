@@ -42,8 +42,14 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
                     + Constants.INTEGER_TYPE
                     + Constants.PRIMARY_KEY
                     + Constants.COMMA_SEP
+                    + Constants.CIRCUIT_ID
+                    + Constants.INTEGER_TYPE
+                    + Constants.COMMA_SEP
                     + Constants.DATE_TIME
                     + Constants.INTEGER_TYPE
+                    + Constants.COMMA_SEP
+                    + Constants.SPEED
+                    + Constants.REAL_TYPE
                     + Constants.COMMA_SEP
                     + Constants.LATITUDE
                     + Constants.REAL_TYPE
@@ -139,7 +145,9 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(Constants.LOCATION_ID, geoLocation.getLocationId());
+        contentValues.put(Constants.CIRCUIT_ID, geoLocation.getCircuitId());
         contentValues.put(Constants.DATE_TIME, geoLocation.getDate());
+        contentValues.put(Constants.SPEED, geoLocation.getSpeed());
         contentValues.put(Constants.LATITUDE, geoLocation.getLatitude());
         contentValues.put(Constants.LONGITUDE, geoLocation.getLongitude());
 
@@ -155,11 +163,10 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
      * into the database.
      *
      * @param circuit     Specified circuit.
-     * @param circuitName Specified name.
      */
-    public void insertCircuit(Circuit circuit, String circuitName) {
+    public void insertCircuit(Circuit circuit) {
         try {
-            insertCircuitIntoDb(circuit, circuitName);
+            insertCircuitIntoDb(circuit);
         } catch (SQLException e) {
             //TODO (jasonscott) Log any errors.
             System.err.println(e.getMessage());
@@ -171,17 +178,14 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
      * into the circuits table using insert or throw.
      *
      * @param circuit     Specified circuit.
-     * @param circuitName Specified name.
      * @throws SQLiteException For errors inserting into the table.
      */
-    private void insertCircuitIntoDb(Circuit circuit, String circuitName) throws SQLiteException {
+    private void insertCircuitIntoDb(Circuit circuit) throws SQLiteException {
 
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(Constants.CIRCUIT_ID, circuit.getCircuitId());
-        contentValues.put(Constants.CIRCUIT_NAME, circuitName);
-        contentValues.put(Constants.START_LOCATION, circuit.getStartLocation().getLocationId());
-        contentValues.put(Constants.END_LOCATION, circuit.getEndLocation().getLocationId());
+        contentValues.put(Constants.CIRCUIT_NAME, circuit.getCircuitName());
 
 //      getWritableDatabase(Constants.SECRET)
         getWritableDatabase()
@@ -196,19 +200,21 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     /**
      * Returns the location with the specified locationId.
      *
-     * @param locationId Specified Location ID
+     * @param circuitId Specified Location ID
      * @return Returns Location
      */
-    public GeoLocation retrieveLocationById(int locationId) {
-        GeoLocation location = new GeoLocation();
+    public ArrayList retrieveLocationByCircuitId(int circuitId) {
+        ArrayList geoLocations = new ArrayList();
 
         String[] columns = {Constants.LOCATION_ID,
+                Constants.CIRCUIT_ID,
                 Constants.DATE_TIME,
+                Constants.SPEED,
                 Constants.LATITUDE,
                 Constants.LONGITUDE};
 
-        String selection = Constants.LOCATION_ID + "=?";
-        String[] selectionArgs = {String.valueOf(locationId)};
+        String selection = Constants.CIRCUIT_ID + "=?";
+        String[] selectionArgs = {String.valueOf(circuitId)};
 
 //        Cursor cursor = getReadableDatabase(Constants.SECRET).query(
         Cursor cursor = getReadableDatabase().query(
@@ -222,16 +228,22 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst()) {
             do {
-                location.setLocationId(cursor.getInt(0));
-                location.setDate(cursor.getLong(1));
-                location.setLatitude(cursor.getFloat(2));
-                location.setLongitude(cursor.getFloat(3));
+                GeoLocation geoLocation = new GeoLocation();
+
+                geoLocation.setLocationId(cursor.getInt(0));
+                geoLocation.setCircuitId(cursor.getInt(1));
+                geoLocation.setDate(cursor.getLong(2));
+                geoLocation.setSpeed(cursor.getLong(3));
+                geoLocation.setLatitude(cursor.getFloat(4));
+                geoLocation.setLongitude(cursor.getFloat(5));
+
+                geoLocations.add(geoLocation);
 
             } while (cursor.moveToNext());
             cursor.close();
         }
 
-        return location;
+        return geoLocations;
     }
 
     /**
@@ -254,10 +266,14 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 GeoLocation geoLocation = new GeoLocation();
+
                 geoLocation.setLocationId(cursor.getInt(0));
-                geoLocation.setDate(cursor.getLong(1));
-                geoLocation.setLatitude(cursor.getFloat(2));
-                geoLocation.setLongitude(cursor.getFloat(3));
+                geoLocation.setCircuitId(cursor.getInt(1));
+                geoLocation.setDate(cursor.getLong(2));
+                geoLocation.setSpeed(cursor.getLong(3));
+                geoLocation.setLatitude(cursor.getFloat(4));
+                geoLocation.setLongitude(cursor.getFloat(5));
+
                 geoLocations.add(geoLocation);
 
             } while (cursor.moveToNext());
@@ -287,10 +303,11 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Circuit circuit = new Circuit();
-                circuit.setCircuitId(cursor.getInt(0));
+                int circuitId = cursor.getInt(0);
+                circuit.setCircuitId(circuitId);
                 circuit.setCircuitName(cursor.getString(1));
-                circuit.setStartLocation(retrieveLocationById(cursor.getInt(2)));
-                circuit.setEndLocation(retrieveLocationById(cursor.getInt(3)));
+                ArrayList geoLocations = retrieveLocationByCircuitId(circuitId);
+                circuit.setGeoLocations(geoLocations);
                 circuits.add(circuit);
             } while (cursor.moveToNext());
             cursor.close();

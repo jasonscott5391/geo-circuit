@@ -1,6 +1,7 @@
 package edu.nyit.csci455.geocircuit.normalized;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * <p>Circuit.java</p>
@@ -15,9 +16,7 @@ public class Circuit implements Serializable {
 
     private String circuitName;
 
-    private GeoLocation startLocation;
-
-    private GeoLocation endLocation;
+    private ArrayList geoLocations;
 
     public int getCircuitId() {
         return circuitId;
@@ -35,19 +34,11 @@ public class Circuit implements Serializable {
         this.circuitName = circuitName;
     }
 
-    public GeoLocation getStartLocation() {
-        return startLocation;
+    public ArrayList getGeoLocations() {
+        return geoLocations;
     }
 
-    public void setStartLocation(GeoLocation startLocation) {
-        this.startLocation = startLocation;
-    }
-
-    public GeoLocation getEndLocation() {
-        return endLocation;
-    }
-
-    public void setEndLocation(GeoLocation endLocation) {
-        this.endLocation = endLocation;
+    public void setGeoLocations(ArrayList geoLocations) {
+        this.geoLocations = geoLocations;
     }
 }
