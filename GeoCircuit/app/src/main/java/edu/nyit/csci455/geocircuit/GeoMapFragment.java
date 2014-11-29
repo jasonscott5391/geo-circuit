@@ -171,25 +171,36 @@ public class GeoMapFragment extends MapFragment {
         mGoogleMap.clear();
 
         GeoLocation startGeoLocation = (GeoLocation) circuit.getGeoLocations().get(0);
-        LatLng startLatLng = new LatLng(startGeoLocation.getLatitude(), startGeoLocation.getLongitude());
+//        LatLng startLatLng = new LatLng(startGeoLocation.getLatitude(), startGeoLocation.getLongitude());
 
-        CameraPosition cameraPosition = CameraPosition.builder()
-                .target(startLatLng)
-                .zoom(14)
-                .build();
 
-        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        LatLng midLatLng = null;
 
         PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.color(0xffff0000);
 
+        int counter = 0;
         for (Object location : circuit.getGeoLocations()) {
             GeoLocation geoLocation = (GeoLocation) location;
 
-            LatLng latLng = new LatLng((double) geoLocation.getLatitude(),
-                    (double) geoLocation.getLongitude());
+            LatLng latLng = new LatLng(geoLocation.getLatitude(),
+                    geoLocation.getLongitude());
 
             polylineOptions.add(latLng);
+            if (counter == circuit.getGeoLocations().size() / 2) {
+                midLatLng = new LatLng(geoLocation.getLatitude(),
+                        geoLocation.getLongitude());
+            }
+            counter++;
         }
+
+        int zoom = 14 - ((counter/5)/2);
+        CameraPosition cameraPosition = CameraPosition.builder()
+                .target(midLatLng)
+                .zoom(zoom)
+                .build();
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         mGoogleMap.addPolyline(polylineOptions);
     }
