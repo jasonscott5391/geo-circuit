@@ -20,11 +20,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import edu.nyit.csci455.geocircuit.Interface.*;
 import edu.nyit.csci455.geocircuit.normalized.Circuit;
 import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
-import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
 /**
  * <p>Title: GeoMapFragment.java</p>
@@ -170,37 +170,78 @@ public class GeoMapFragment extends MapFragment {
     public void drawCircuit(Circuit circuit) {
         mGoogleMap.clear();
 
-        GeoLocation startGeoLocation = (GeoLocation) circuit.getGeoLocations().get(0);
-//        LatLng startLatLng = new LatLng(startGeoLocation.getLatitude(), startGeoLocation.getLongitude());
+        ArrayList circuits = circuit.getGeoLocations();
+        int numCircuits = circuits.size();
 
+        GeoLocation startGeoLocation = (GeoLocation) circuits.get(0);
+        LatLng startLatLng = new LatLng(startGeoLocation.getLatitude(), startGeoLocation.getLongitude());
+
+        GeoLocation endGeoLocation = (GeoLocation) circuits.get(numCircuits - 1);
+        LatLng endLatLng = new LatLng(endGeoLocation.getLatitude(), endGeoLocation.getLongitude());
 
         LatLng midLatLng = null;
 
         PolylineOptions polylineOptions = new PolylineOptions();
         polylineOptions.color(0xffff0000);
 
+        //TODO (jasonscott) Get units from preferences.
+        String units = "MPH";
+        double totalSpeed = 0.0;
+        double avgSpeed = 0.0;
+
         int counter = 0;
-        for (Object location : circuit.getGeoLocations()) {
+        for (Object location : circuits) {
             GeoLocation geoLocation = (GeoLocation) location;
 
             LatLng latLng = new LatLng(geoLocation.getLatitude(),
                     geoLocation.getLongitude());
 
             polylineOptions.add(latLng);
-            if (counter == circuit.getGeoLocations().size() / 2) {
+            if (counter == circuits.size() / 2) {
                 midLatLng = new LatLng(geoLocation.getLatitude(),
                         geoLocation.getLongitude());
             }
+
+            totalSpeed += geoLocation.getSpeed();
+
             counter++;
         }
 
-        int zoom = 14 - ((counter/5)/2);
+        avgSpeed = (totalSpeed / numCircuits);
+
+        int zoom = 14 - ((counter / 5) / 2);
         CameraPosition cameraPosition = CameraPosition.builder()
                 .target(midLatLng)
                 .zoom(zoom)
                 .build();
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+        mGoogleMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_marker))
+                .anchor(0.0f, 1.0f)
+                .position(startLatLng)
+                .title("Starting line...")
+                .snippet("Date: "
+                        + new Date(startGeoLocation.getDate())
+                        .toString()));
+
+        mGoogleMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_marker))
+                .anchor(0.0f, 1.0f)
+                .position(endLatLng)
+                .title("Finish line...")
+                .snippet("Duration: "
+                        + circuit.calculateCircuitDuration()
+                        + System.getProperty("line.separator")
+                        + "Distance: "
+                        + circuit.calculateCircuitDistance()
+                        + " Mi"
+                        + System.getProperty("line.separator")
+                        + "Mean Speed: "
+                        + avgSpeed
+                        + " "
+                        + units));
 
         mGoogleMap.addPolyline(polylineOptions);
     }

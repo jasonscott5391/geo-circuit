@@ -123,60 +123,6 @@ public class CircuitFragment extends Fragment {
     }
 
     /**
-     * Returns the time duration of circuit between the
-     * specified starting and ending locations.
-     *
-     * @param start Specified start Location.
-     * @param end   Specified end Location.
-     * @return String duration time traveled.
-     */
-    private String getCircuitDuration(GeoLocation start, GeoLocation end) {
-        long difference = start.getDate() - end.getDate();
-
-        long seconds = difference / 1000;
-        long minutes = seconds / 60;
-        long hours = minutes / 60;
-        String time = hours % 24 + ":" + minutes % 60 + " :" + seconds % 60;
-
-        return time;
-    }
-
-    /**
-     * Returns the distance traveled of a circuit between the
-     * specified starting and ending locations.
-     *
-     * @param start Specified start Location.
-     * @param end   Specified end Location.
-     * @return String distance traveled.
-     */
-    private String getCircuitDistance(GeoLocation start, GeoLocation end) {
-        int earthRadius = 6371;
-        double kmToMi = 0.621371;
-
-        // Difference in latitude and longitude in radians.
-        double dLat = Math.toRadians(end.getLatitude() - start.getLatitude());
-        double dLng = Math.toRadians(end.getLongitude() - start.getLongitude());
-
-        // Convert latitudes to radians.
-        double startlatRads = Math.toRadians(start.getLatitude());
-        double endLatRads = Math.toRadians(end.getLatitude());
-
-        // Calculate the angle
-        double angle = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(startlatRads) * Math.cos(endLatRads);
-
-        // Calculate the angular distance
-        double angularDistance = 2 * Math.atan2(Math.sqrt(angle), Math.sqrt(1 - angle));
-
-        // Convert to kilometers
-        double distanceKm = earthRadius * angularDistance;
-
-        // Convert to Miles
-        double distanceMi = distanceKm * kmToMi;
-
-        return String.format("%.2f", distanceMi);
-    }
-
-    /**
      * Inner class, adapter for Circuit Manager ListView.
      */
     private class CircuitListAdapter extends BaseAdapter {
@@ -221,15 +167,9 @@ public class CircuitFragment extends Fragment {
             nameView.setText(circuit.getCircuitName());
 
             durationView.setText(
-                    getCircuitDuration(
-                            (GeoLocation) circuit.getGeoLocations().get(0),
-                            (GeoLocation) circuit.getGeoLocations().get(circuit.getGeoLocations().size() - 1)));
-            distanceView.setText(
-                    String.valueOf(
-                            getCircuitDistance(
-                                    (GeoLocation) circuit.getGeoLocations().get(0),
-                                    (GeoLocation) circuit.getGeoLocations().get(circuit.getGeoLocations().size() - 1)))
-                            + " mi");
+                    circuit.calculateCircuitDuration());
+
+            distanceView.setText(circuit.calculateCircuitDistance() + " mi");
 
             return view;
         }
@@ -247,6 +187,9 @@ public class CircuitFragment extends Fragment {
         }
     }
 
+    /**
+     * Inner callback interface that must be implemented by MainActivity.
+     */
     public interface OnCircuitSelectedListener {
         public void onCircuitSelected(Circuit circuit);
     }

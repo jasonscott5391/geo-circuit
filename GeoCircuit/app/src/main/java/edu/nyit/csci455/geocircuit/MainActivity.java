@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import edu.nyit.csci455.geocircuit.Interface.Constants;
 import edu.nyit.csci455.geocircuit.normalized.Circuit;
 import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
+import edu.nyit.csci455.geocircuit.normalized.Place;
 import edu.nyit.csci455.geocircuit.util.DrawerItemListAdapter;
 import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
@@ -49,13 +50,16 @@ public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.OnConnectionFailedListener,
         LocationListener,
         SensorEventListener,
-        CircuitFragment.OnCircuitSelectedListener {
+        CircuitFragment.OnCircuitSelectedListener,
+        NearMeFragment.OnPlaceSelectedListener {
 
     private GeoMapFragment mMapFragment;
 
     private DashboardFragment mDashboardFragment;
 
     private CircuitFragment mCircuitFragment;
+
+    private NearMeFragment mNearMeFragment;
 
     private DrawerLayout mDrawerLayout;
 
@@ -168,6 +172,9 @@ public class MainActivity extends FragmentActivity implements
         mLocationClient.removeLocationUpdates(this);
         mLocationClient.disconnect();
         mSensorManager.unregisterListener(this);
+
+        SharedPreferences.Editor preferencesEditor = mSharedPreferences.edit();
+        preferencesEditor.putInt("current_feature", mCurrentFeature);
     }
 
     @Override
@@ -220,6 +227,9 @@ public class MainActivity extends FragmentActivity implements
         getActionBar().setTitle(mTitle);
     }
 
+    /**
+     * Initialized the drawer menu layout and accompanying fields.
+     */
     private void initializeDrawerMenu() {
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -257,32 +267,55 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     * @param position
+     * For a menu selection in the drawer layout, replace the fragments.
+     *
+     * @param position Position selected in drawer menu.
      */
     private void selectItem(int position) {
-        //TODO (jasonscott) Switch statement to handle different cases of onClick.
         mCurrentFeature = position;
         mDrawerLayout.closeDrawer(mDrawerList);
 
         switch (position) {
             case Constants.DASHBOARD:
+
                 if (mDashboardFragment == null) {
                     mDashboardFragment = new DashboardFragment();
                 }
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_layout, mDashboardFragment)
+                        .commit();
+
                 mMapFragment.dashboardMode(mLocationClient.getLastLocation(), mAzimuth);
                 mLocationClient.requestLocationUpdates(mLocationRequest, this);
                 break;
+
             case Constants.CIRCUIT_MANAGER:
+
                 if (mCircuitFragment == null) {
                     mCircuitFragment = new CircuitFragment();
                 }
+
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.main_layout, mCircuitFragment)
                         .commit();
+
                 mMapFragment.circuitManagerMode();
                 break;
+
             case Constants.NEAR_ME:
+
+                if (mNearMeFragment == null) {
+                    mNearMeFragment = new NearMeFragment();
+                }
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.main_layout, mNearMeFragment)
+                        .commit();
+
                 mMapFragment.nearMeMode();
                 break;
 
@@ -354,7 +387,7 @@ public class MainActivity extends FragmentActivity implements
 
                 Circuit circuit = new Circuit();
                 circuit.setCircuitId(Integer.parseInt(parts[0]));
-
+                circuit.setCircuitName(parts[1]);
                 circuitList.add(circuit);
             }
         } catch (IOException e) {
@@ -556,6 +589,11 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onCircuitSelected(Circuit circuit) {
         mMapFragment.drawCircuit(circuit);
+    }
+
+    @Override
+    public void onPlaceSelected(Place place) {
+        //TODO (jasonscott) Call GeoMapFragment method to drop pin and zoom into place.
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
