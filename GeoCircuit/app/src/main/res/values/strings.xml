@@ -44,5 +44,6 @@
         <item>1</item>
     </string-array>
 
-
+    <!-- String for near_me -->
+    <string name="near_me_title">Near me</string>
 </resources>
