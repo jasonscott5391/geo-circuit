@@ -10,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.support.v4.app.FragmentActivity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -175,6 +176,7 @@ public class MainActivity extends FragmentActivity implements
 
         SharedPreferences.Editor preferencesEditor = mSharedPreferences.edit();
         preferencesEditor.putInt("current_feature", mCurrentFeature);
+        preferencesEditor.apply();
     }
 
     @Override
@@ -354,9 +356,10 @@ public class MainActivity extends FragmentActivity implements
                 geoLocation.setLocationId(Integer.parseInt(parts[0]));
                 geoLocation.setCircuitId(Integer.parseInt(parts[1]));
                 geoLocation.setDate(Long.parseLong(parts[2]));
-                geoLocation.setSpeed(Float.parseFloat(parts[3]));
-                geoLocation.setLatitude(Float.parseFloat(parts[4]));
-                geoLocation.setLongitude(Float.parseFloat(parts[5]));
+                geoLocation.setAzimuth(Long.parseLong(parts[3]));
+                geoLocation.setSpeed(Float.parseFloat(parts[4]));
+                geoLocation.setLatitude(Float.parseFloat(parts[5]));
+                geoLocation.setLongitude(Float.parseFloat(parts[6]));
 
 
                 geoLocationList.add(geoLocation);
@@ -594,6 +597,13 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onPlaceSelected(Place place) {
         //TODO (jasonscott) Call GeoMapFragment method to drop pin and zoom into place.
+    }
+
+    @Override
+    public Location getLastLocation() {
+        Location location = mLocationClient.getLastLocation();
+
+        return location;
     }
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {

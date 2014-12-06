@@ -1,6 +1,7 @@
 package edu.nyit.csci455.geocircuit.normalized;
 
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Location.java</p>
@@ -16,6 +17,8 @@ public class GeoLocation implements Serializable {
     private int circuitId;
 
     private long date;
+
+    private float azimuth;
 
     private float speed;
 
@@ -47,6 +50,14 @@ public class GeoLocation implements Serializable {
         this.date = date;
     }
 
+    public float getAzimuth() {
+        return azimuth;
+    }
+
+    public void setAzimuth(float azimuth) {
+        this.azimuth = azimuth;
+    }
+
     public float getSpeed() {
         return speed;
     }
@@ -69,6 +80,27 @@ public class GeoLocation implements Serializable {
 
     public void setLongitude(float longitude) {
         this.longitude = longitude;
+    }
+
+    /**
+     * Returns the time duration between this and the start
+     * GeoLocation.
+     *
+     * @param start Specified start GeoLocation.
+     * @return Time from start to GeoLocation to this GeoLocation.
+     */
+    public String calculateTime(GeoLocation start) {
+
+        long difference = this.getDate() - start.getDate();
+
+        String time = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(difference),
+                TimeUnit.MILLISECONDS.toMinutes(difference) -
+                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)), // The change is in this line
+                TimeUnit.MILLISECONDS.toSeconds(difference) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(difference)));
+
+        return time;
     }
 
 }

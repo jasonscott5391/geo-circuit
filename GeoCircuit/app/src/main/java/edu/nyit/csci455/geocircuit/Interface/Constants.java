@@ -31,6 +31,7 @@ public interface Constants {
     public static final String LOCATION_ID = "location_id";
     public static final String DATE_TIME = "date_time";
     public static final String SPEED = "speed";
+    public static final String AZIMUTH = "azimuth";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
 

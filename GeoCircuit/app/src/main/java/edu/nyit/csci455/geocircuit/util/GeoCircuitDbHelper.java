@@ -48,6 +48,9 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
                     + Constants.DATE_TIME
                     + Constants.INTEGER_TYPE
                     + Constants.COMMA_SEP
+                    + Constants.AZIMUTH
+                    + Constants.REAL_TYPE
+                    + Constants.COMMA_SEP
                     + Constants.SPEED
                     + Constants.REAL_TYPE
                     + Constants.COMMA_SEP
@@ -147,6 +150,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
         contentValues.put(Constants.LOCATION_ID, geoLocation.getLocationId());
         contentValues.put(Constants.CIRCUIT_ID, geoLocation.getCircuitId());
         contentValues.put(Constants.DATE_TIME, geoLocation.getDate());
+        contentValues.put(Constants.AZIMUTH, geoLocation.getAzimuth());
         contentValues.put(Constants.SPEED, geoLocation.getSpeed());
         contentValues.put(Constants.LATITUDE, geoLocation.getLatitude());
         contentValues.put(Constants.LONGITUDE, geoLocation.getLongitude());
@@ -209,6 +213,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
         String[] columns = {Constants.LOCATION_ID,
                 Constants.CIRCUIT_ID,
                 Constants.DATE_TIME,
+                Constants.AZIMUTH,
                 Constants.SPEED,
                 Constants.LATITUDE,
                 Constants.LONGITUDE};
@@ -233,9 +238,10 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
                 geoLocation.setLocationId(cursor.getInt(0));
                 geoLocation.setCircuitId(cursor.getInt(1));
                 geoLocation.setDate(cursor.getLong(2));
-                geoLocation.setSpeed(cursor.getLong(3));
-                geoLocation.setLatitude(cursor.getFloat(4));
-                geoLocation.setLongitude(cursor.getFloat(5));
+                geoLocation.setAzimuth(cursor.getFloat(3));
+                geoLocation.setSpeed(cursor.getFloat(4));
+                geoLocation.setLatitude(cursor.getFloat(5));
+                geoLocation.setLongitude(cursor.getFloat(6));
 
                 geoLocations.add(geoLocation);
 

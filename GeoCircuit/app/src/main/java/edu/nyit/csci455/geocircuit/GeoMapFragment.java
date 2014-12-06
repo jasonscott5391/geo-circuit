@@ -108,6 +108,7 @@ public class GeoMapFragment extends MapFragment {
      * @param azimuth  The user's bearing.
      */
     public void dashboardMode(Location location, float azimuth) {
+        mGoogleMap.clear();
         float azimuthDegrees = (float) Math.toDegrees(azimuth);
 
         if (azimuthDegrees < 0.0f) {
@@ -202,6 +203,17 @@ public class GeoMapFragment extends MapFragment {
                         geoLocation.getLongitude());
             }
 
+            if (counter != 0 && counter != circuits.size()) {
+                mGoogleMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker))
+                        .rotation(geoLocation.getAzimuth())
+                        .position(latLng)
+                        .flat(true)
+                        .title("Checkpoint " + (counter + 1))
+                        .snippet("Speed: " + geoLocation.getSpeed()
+                        + " Time: " + geoLocation.calculateTime(startGeoLocation)));
+            }
+
             totalSpeed += geoLocation.getSpeed();
 
             counter++;
@@ -221,7 +233,7 @@ public class GeoMapFragment extends MapFragment {
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_marker))
                 .anchor(0.0f, 1.0f)
                 .position(startLatLng)
-                .title("Starting line...")
+                .title("Start")
                 .snippet("Date: "
                         + new Date(startGeoLocation.getDate())
                         .toString()));
@@ -230,7 +242,7 @@ public class GeoMapFragment extends MapFragment {
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_marker))
                 .anchor(0.0f, 1.0f)
                 .position(endLatLng)
-                .title("Finish line...")
+                .title("Finish")
                 .snippet("Duration: "
                         + circuit.calculateCircuitDuration()
                         + System.getProperty("line.separator")

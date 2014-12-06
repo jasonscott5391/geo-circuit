@@ -2,6 +2,7 @@ package edu.nyit.csci455.geocircuit.normalized;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>Circuit.java</p>
@@ -90,10 +91,12 @@ public class Circuit implements Serializable {
 
         long difference = end.getDate() - start.getDate();
 
-        long seconds = difference / 1000;
-        long minutes = seconds / 60;
-        long hours = minutes / 60;
-        String time = hours % 24 + ":" + minutes % 60 + ":" + seconds % 60;
+        String time = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(difference),
+                TimeUnit.MILLISECONDS.toMinutes(difference) -
+                        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)), // The change is in this line
+                TimeUnit.MILLISECONDS.toSeconds(difference) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(difference)));
 
         return time;
     }
