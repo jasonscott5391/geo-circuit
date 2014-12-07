@@ -147,7 +147,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     private void insertLocationIntoDb(GeoLocation geoLocation) throws SQLiteException {
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(Constants.LOCATION_ID, geoLocation.getLocationId());
+//        contentValues.put(Constants.LOCATION_ID, geoLocation.getLocationId());
         contentValues.put(Constants.CIRCUIT_ID, geoLocation.getCircuitId());
         contentValues.put(Constants.DATE_TIME, geoLocation.getDate());
         contentValues.put(Constants.AZIMUTH, geoLocation.getAzimuth());

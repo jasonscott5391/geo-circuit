@@ -28,7 +28,7 @@ public interface Constants {
     public static final String CIRCUITS_TABLE = "circuits";
 
     // Column names
-    public static final String LOCATION_ID = "location_id";
+    public static final String LOCATION_ID = "_id";
     public static final String DATE_TIME = "date_time";
     public static final String SPEED = "speed";
     public static final String AZIMUTH = "azimuth";

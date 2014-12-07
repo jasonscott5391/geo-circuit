@@ -203,7 +203,7 @@ public class GeoMapFragment extends MapFragment {
                         geoLocation.getLongitude());
             }
 
-            if (counter != 0 && counter != circuits.size()) {
+            if (counter != 0 && counter != (circuits.size() - 1)) {
                 mGoogleMap.addMarker(new MarkerOptions()
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker))
                         .rotation(geoLocation.getAzimuth())
