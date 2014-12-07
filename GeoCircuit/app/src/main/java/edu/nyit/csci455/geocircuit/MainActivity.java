@@ -52,7 +52,8 @@ public class MainActivity extends FragmentActivity implements
         LocationListener,
         SensorEventListener,
         CircuitFragment.OnCircuitSelectedListener,
-        NearMeFragment.OnPlaceSelectedListener {
+        NearMeFragment.OnPlaceSelectedListener,
+        DashboardFragment.OnRecordingCircuitListener {
 
     private GeoMapFragment mMapFragment;
 
@@ -94,9 +95,13 @@ public class MainActivity extends FragmentActivity implements
 
     private float mAzimuth;
 
+    private float mSpeed;
+
     private float[] mGravity;
 
     private float[] mGeoMagnetic;
+
+    private boolean mCircuitRecording;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -353,7 +358,7 @@ public class MainActivity extends FragmentActivity implements
                 String[] parts = line.split(",");
 
                 GeoLocation geoLocation = new GeoLocation();
-                geoLocation.setLocationId(Integer.parseInt(parts[0]));
+//                geoLocation.setLocationId(Integer.parseInt(parts[0]));
                 geoLocation.setCircuitId(Integer.parseInt(parts[1]));
                 geoLocation.setDate(Long.parseLong(parts[2]));
                 geoLocation.setAzimuth(Long.parseLong(parts[3]));
@@ -546,13 +551,15 @@ public class MainActivity extends FragmentActivity implements
         if (mCurrentFeature == Constants.DASHBOARD) {
             mMapFragment.dashboardMode(location, mAzimuth);
 
-            // TODO (jasonscott) Store location into database if trip is being recorded and interval has passed.
-            // if (mDashboardFragment.isRecordingCircuit() {
-//            GeoLocation geoLocation = new GeoLocation();
-//            geoLocation.setLatitude((float) location.getLatitude());
-//            geoLocation.setLongitude((float) location.getLongitude());
-//                mGeoDbHelper.insertLocation();
-            // }
+            if (mCircuitRecording) {
+                GeoLocation geoLocation = new GeoLocation();
+                geoLocation.setAzimuth(mAzimuth);
+                geoLocation.setSpeed(mSpeed);
+                geoLocation.setDate(System.currentTimeMillis());
+                geoLocation.setLatitude((float) location.getLatitude());
+                geoLocation.setLongitude((float) location.getLongitude());
+                mGeoDbHelper.insertLocation(geoLocation);
+            }
         }
 
     }
@@ -590,13 +597,23 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
+    public void recordCircuit(boolean recording) {
+        mCircuitRecording = recording;
+    }
+
+    @Override
+    public boolean isRecordingCircuit() {
+        return mCircuitRecording;
+    }
+
+    @Override
     public void onCircuitSelected(Circuit circuit) {
         mMapFragment.drawCircuit(circuit);
     }
 
     @Override
     public void onPlaceSelected(Place place) {
-        //TODO (jasonscott) Call GeoMapFragment method to drop pin and zoom into place.
+        mMapFragment.dropPlace(place);
     }
 
     @Override

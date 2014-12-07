@@ -25,6 +25,7 @@ import java.util.Date;
 import edu.nyit.csci455.geocircuit.Interface.*;
 import edu.nyit.csci455.geocircuit.normalized.Circuit;
 import edu.nyit.csci455.geocircuit.normalized.GeoLocation;
+import edu.nyit.csci455.geocircuit.normalized.Place;
 
 /**
  * <p>Title: GeoMapFragment.java</p>
@@ -211,7 +212,7 @@ public class GeoMapFragment extends MapFragment {
                         .flat(true)
                         .title("Checkpoint " + (counter))
                         .snippet("Speed: " + geoLocation.getSpeed()
-                        + " Time: " + geoLocation.calculateTime(startGeoLocation)));
+                                + " Time: " + geoLocation.calculateTime(startGeoLocation)));
             }
 
             totalSpeed += geoLocation.getSpeed();
@@ -256,5 +257,24 @@ public class GeoMapFragment extends MapFragment {
                         + units));
 
         mGoogleMap.addPolyline(polylineOptions);
+    }
+
+    public void dropPlace(Place place) {
+        mGoogleMap.clear();
+
+        LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+        mGoogleMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_marker))
+                .position(latLng)
+                .title(place.getName())
+                .snippet("Distance: " + place.getDistance() + "Mi"));
+
+        CameraPosition cameraPosition = CameraPosition.builder()
+                .target(latLng)
+                .zoom(18)
+                .build();
+
+        mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
     }
 }
