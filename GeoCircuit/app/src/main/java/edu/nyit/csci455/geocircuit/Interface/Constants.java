@@ -28,7 +28,7 @@ public interface Constants {
     public static final String CIRCUITS_TABLE = "circuits";
 
     // Column names
-    public static final String LOCATION_ID = "_id";
+    public static final String _ID = "_id";
     public static final String DATE_TIME = "date_time";
     public static final String SPEED = "speed";
     public static final String AZIMUTH = "azimuth";
@@ -37,8 +37,6 @@ public interface Constants {
 
     public static final String CIRCUIT_ID = "circuit_id";
     public static final String CIRCUIT_NAME = "circuit_name";
-    public static final String START_LOCATION = "start_location";
-    public static final String END_LOCATION = "end_location";
 
     // SQLite types
     public static final String INTEGER_TYPE = " INTEGER";

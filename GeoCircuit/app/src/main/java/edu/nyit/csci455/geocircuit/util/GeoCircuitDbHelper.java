@@ -38,7 +38,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     // SQLite create statements
     public static final String SQL_CREATE_LOCATION_ENTRIES =
             " ("
-                    + Constants.LOCATION_ID
+                    + Constants._ID
                     + Constants.INTEGER_TYPE
                     + Constants.PRIMARY_KEY
                     + Constants.COMMA_SEP
@@ -63,18 +63,12 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
 
     public static final String SQL_CREATE_CIRCUIT_ENTRIES =
             " ("
-                    + Constants.CIRCUIT_ID
+                    + Constants._ID
                     + Constants.INTEGER_TYPE
                     + Constants.PRIMARY_KEY
                     + Constants.COMMA_SEP
                     + Constants.CIRCUIT_NAME
                     + Constants.TEXT_TYPE
-                    + Constants.COMMA_SEP
-                    + Constants.START_LOCATION
-                    + Constants.INTEGER_TYPE
-                    + Constants.COMMA_SEP
-                    + Constants.END_LOCATION
-                    + Constants.INTEGER_TYPE
                     + " )";
 
     /**
@@ -188,7 +182,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
 
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(Constants.CIRCUIT_ID, circuit.getCircuitId());
+//        contentValues.put(Constants.CIRCUIT_ID, circuit.getCircuitId());
         contentValues.put(Constants.CIRCUIT_NAME, circuit.getCircuitName());
 
 //      getWritableDatabase(Constants.SECRET)
@@ -210,7 +204,7 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
     public ArrayList retrieveLocationByCircuitId(int circuitId) {
         ArrayList geoLocations = new ArrayList();
 
-        String[] columns = {Constants.LOCATION_ID,
+        String[] columns = {Constants._ID,
                 Constants.CIRCUIT_ID,
                 Constants.DATE_TIME,
                 Constants.AZIMUTH,

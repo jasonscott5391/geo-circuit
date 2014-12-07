@@ -209,7 +209,7 @@ public class GeoMapFragment extends MapFragment {
                         .rotation(geoLocation.getAzimuth())
                         .position(latLng)
                         .flat(true)
-                        .title("Checkpoint " + (counter + 1))
+                        .title("Checkpoint " + (counter))
                         .snippet("Speed: " + geoLocation.getSpeed()
                         + " Time: " + geoLocation.calculateTime(startGeoLocation)));
             }
