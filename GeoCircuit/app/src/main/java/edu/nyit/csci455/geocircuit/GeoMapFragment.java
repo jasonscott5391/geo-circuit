@@ -264,7 +264,7 @@ public class GeoMapFragment extends MapFragment {
 
         LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
         mGoogleMap.addMarker(new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_marker))
+                .icon(BitmapDescriptorFactory.fromBitmap(place.getIcon()))
                 .position(latLng)
                 .title(place.getName())
                 .snippet("Distance: " + place.getDistance() + "Mi"));

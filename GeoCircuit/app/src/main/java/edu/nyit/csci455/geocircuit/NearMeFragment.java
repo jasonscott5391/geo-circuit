@@ -65,6 +65,8 @@ public class NearMeFragment extends Fragment {
 
     private Point mDimensions;
 
+    private boolean mRefreshing = false;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -135,7 +137,10 @@ public class NearMeFragment extends Fragment {
      * @param location Specified Location.
      */
     public void runPlacesHttpClient(Location location) {
-        mPlacesAsyncTask.execute(location);
+        if (!mRefreshing) {
+            mPlacesAsyncTask.execute(location);
+        }
+
     }
 
 
@@ -202,7 +207,7 @@ public class NearMeFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-
+            mRefreshing = true;
         }
 
         @Override
@@ -269,6 +274,13 @@ public class NearMeFragment extends Fragment {
                 mPlacesListAdapter.notifyDataSetChanged();
                 mPlacesListHeaderText.setText(mPlacesListAdapter.getCount() + " Places nearby");
             }
+
+            mRefreshing = false;
+        }
+
+        @Override
+        protected void onCancelled(ArrayList<Place> result) {
+            mRefreshing = false;
         }
 
         /**
