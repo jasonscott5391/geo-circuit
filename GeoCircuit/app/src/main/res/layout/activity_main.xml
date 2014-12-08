@@ -20,7 +20,8 @@
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
-        android:background="#90111111"
+        android:background="#000000"
+        android:dividerHeight="4dp"
         android:choiceMode="singleChoice" />
 
 
