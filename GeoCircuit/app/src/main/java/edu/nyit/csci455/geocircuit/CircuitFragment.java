@@ -97,7 +97,7 @@ public class CircuitFragment extends Fragment {
         mCircuitListAdapter = new CircuitListAdapter();
         mCircuitList.setAdapter(mCircuitListAdapter);
 
-        mCircuitList.addHeaderView(mCircuitListHeader);
+        mCircuitList.addHeaderView(mCircuitListHeader, null, false);
 
         mCircuitListHeaderText.setText(mCircuitListAdapter.getCount() + " Circuit(s)");
 

@@ -259,6 +259,10 @@ public class GeoMapFragment extends MapFragment {
         mGoogleMap.addPolyline(polylineOptions);
     }
 
+    /**
+     *
+     * @param place
+     */
     public void dropPlace(Place place) {
         mGoogleMap.clear();
 
@@ -267,7 +271,7 @@ public class GeoMapFragment extends MapFragment {
                 .icon(BitmapDescriptorFactory.fromBitmap(place.getIcon()))
                 .position(latLng)
                 .title(place.getName())
-                .snippet("Distance: " + place.getDistance() + "Mi"));
+                .snippet("Distance: " + place.getDistance() + " Mi"));
 
         CameraPosition cameraPosition = CameraPosition.builder()
                 .target(latLng)

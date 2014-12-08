@@ -618,8 +618,10 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public Location getLastLocation() {
-        Location location = mLocationClient.getLastLocation();
-
+        Location location = null;
+        if (mLocationClient.isConnected()) {
+            location = mLocationClient.getLastLocation();
+        }
         return location;
     }
 

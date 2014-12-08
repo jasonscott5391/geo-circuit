@@ -108,7 +108,7 @@ public class NearMeFragment extends Fragment {
         mPlacesListAdapter = new PlacesListAdapter();
         mPlacesList.setAdapter(mPlacesListAdapter);
 
-        mPlacesList.addHeaderView(mPlacesListHeader);
+        mPlacesList.addHeaderView(mPlacesListHeader, null, false);
 
         mPlacesListHeaderText.setText(mPlacesListAdapter.getCount() + " Places nearby");
 
@@ -123,8 +123,6 @@ public class NearMeFragment extends Fragment {
         super.onResume();
         if (mLocation == null) {
             mLocation = mPlaceSelectedListener.getLastLocation();
-        } else {
-
         }
 
         runPlacesHttpClient(mLocation);
