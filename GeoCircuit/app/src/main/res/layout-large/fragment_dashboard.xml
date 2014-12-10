@@ -2,15 +2,16 @@
 <GridView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dashboard"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clickable="false"
-    android:columnWidth="96dp"
-    android:drawSelectorOnTop="false"
-    android:gravity="center"
-    android:horizontalSpacing="1dp"
+    android:layout_height="match_parent"
     android:numColumns="3"
-    android:verticalSpacing="0dp">
+    >
 
-
+    <!-- android:clickable="false"
+        android:columnWidth="96dp"
+        android:drawSelectorOnTop="false"
+        android:gravity="center"
+        android:horizontalSpacing="10dp"
+        android:numColumns="3"
+        android:stretchMode="spacingWidthUniform"
+        android:verticalSpacing="10dp"  -->
 </GridView>
-

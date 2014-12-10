@@ -44,7 +44,10 @@ import edu.nyit.csci455.geocircuit.util.DrawerItemListAdapter;
 import edu.nyit.csci455.geocircuit.util.GeoCircuitDbHelper;
 
 /**
+ * <p>MainActivity.java</p>
+ * <p></p>
  *
+ * @author jasonscott
  */
 public class MainActivity extends FragmentActivity implements
         GooglePlayServicesClient.ConnectionCallbacks,
@@ -159,7 +162,7 @@ public class MainActivity extends FragmentActivity implements
                 Constants.DASHBOARD);
 
         mGeoDbHelper = GeoCircuitDbHelper.getInstance(this);
-        populateDatabaseTest(mGeoDbHelper);
+//        populateDatabaseTest(mGeoDbHelper);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
@@ -175,10 +178,11 @@ public class MainActivity extends FragmentActivity implements
     @Override
     protected void onPause() {
         super.onPause();
-        mLocationClient.removeLocationUpdates(this);
-        mLocationClient.disconnect();
-        mSensorManager.unregisterListener(this);
-
+        if (mLocationClient.isConnected()) {
+            mLocationClient.removeLocationUpdates(this);
+            mLocationClient.disconnect();
+            mSensorManager.unregisterListener(this);
+        }
         SharedPreferences.Editor preferencesEditor = mSharedPreferences.edit();
         preferencesEditor.putInt("current_feature", mCurrentFeature);
         preferencesEditor.apply();
@@ -358,7 +362,6 @@ public class MainActivity extends FragmentActivity implements
                 String[] parts = line.split(",");
 
                 GeoLocation geoLocation = new GeoLocation();
-//                geoLocation.setLocationId(Integer.parseInt(parts[0]));
                 geoLocation.setCircuitId(Integer.parseInt(parts[1]));
                 geoLocation.setDate(Long.parseLong(parts[2]));
                 geoLocation.setAzimuth(Long.parseLong(parts[3]));
@@ -547,9 +550,15 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onLocationChanged(android.location.Location location) {
+    public void onLocationChanged(Location location) {
         if (mCurrentFeature == Constants.DASHBOARD) {
-            mMapFragment.dashboardMode(location, mAzimuth);
+            mMapFragment.updatePosition(location, mAzimuth);
+
+            mSpeed = location.getSpeed();
+            if (mDashboardFragment != null) {
+                mDashboardFragment.updateSpeed(mSpeed);
+                mDashboardFragment.updateCompass(mAzimuth);
+            }
 
             if (mCircuitRecording) {
                 GeoLocation geoLocation = new GeoLocation();
@@ -625,6 +634,9 @@ public class MainActivity extends FragmentActivity implements
         return location;
     }
 
+    /**
+     *
+     */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
 

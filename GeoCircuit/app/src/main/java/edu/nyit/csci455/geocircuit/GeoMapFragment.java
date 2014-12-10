@@ -110,6 +110,8 @@ public class GeoMapFragment extends MapFragment {
      */
     public void dashboardMode(Location location, float azimuth) {
         mGoogleMap.clear();
+        mGoogleMap.setMyLocationEnabled(false);
+
         float azimuthDegrees = (float) Math.toDegrees(azimuth);
 
         if (azimuthDegrees < 0.0f) {
@@ -117,7 +119,6 @@ public class GeoMapFragment extends MapFragment {
         }
 
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        mGoogleMap.setMyLocationEnabled(false);
 
         if (mMarker != null) {
             toggleMarker();
@@ -135,6 +136,34 @@ public class GeoMapFragment extends MapFragment {
                 .build();
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    /**
+     *
+     * @param location
+     * @param azimuth
+     */
+    public void updatePosition(Location location, float azimuth) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+        float azimuthDegrees = (float) Math.toDegrees(azimuth);
+
+        if (azimuthDegrees < 0.0f) {
+            azimuthDegrees += 360.0f;
+        }
+
+        if (mMarker != null) {
+            mMarker.setPosition(latLng);
+            mMarker.setRotation(azimuthDegrees);
+
+            CameraPosition cameraPosition = CameraPosition.builder()
+                    .target(latLng)
+                    .zoom(18)
+                    .bearing(azimuthDegrees)
+                    .build();
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
     }
 
     /**
@@ -260,7 +289,6 @@ public class GeoMapFragment extends MapFragment {
     }
 
     /**
-     *
      * @param place
      */
     public void dropPlace(Place place) {
