@@ -14,8 +14,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -108,7 +108,9 @@ public class DashboardFragment extends Fragment {
     }
 
     /**
-     * @param temp
+     * Updates the temperature with the specified temp.
+     *
+     * @param temp Specified temp.
      */
     public void updateTemperature(double temp) {
         int tempDegF = (int) Math.round(((temp - 273) * (9 / 5)) + 32);
@@ -117,28 +119,36 @@ public class DashboardFragment extends Fragment {
     }
 
     /**
-     * @param speed
+     * Updates the speed with the specified speed.
+     *
+     * @param speed Specified speed.
      */
     public void updateSpeed(float speed) {
         mDashGridAdapter.updateSpeedometer(speed);
     }
 
     /**
-     * @param azimuth
+     * Updates the compass with the specified azimuth.
+     *
+     * @param azimuth Specified azimuth.
      */
     public void updateCompass(float azimuth) {
         mDashGridAdapter.updateMagnetometer(azimuth);
     }
 
     /**
-     * @param duration
+     * Updates the duration of the circuit with the specified duration.
+     *
+     * @param duration Specified duration.
      */
     public void updateDuration(long duration) {
         mDashGridAdapter.updateDuration(duration);
     }
 
     /**
-     * @param distance
+     * Updates the distance traveled of the circuit with the specified distance.
+     *
+     * @param distance Specified distance.
      */
     public void updateDistance(float distance) {
         mDashGridAdapter.updateDistance(distance);
@@ -148,13 +158,18 @@ public class DashboardFragment extends Fragment {
      * Interface defining methods for recording circuits.
      */
     public interface OnRecordingCircuitListener {
-        public void recordCircuit(boolean recording);
+        public void recordCircuit();
 
         public boolean isRecordingCircuit();
 
         public Location getLastLocation();
     }
 
+    /**
+     * Runs the HTTP client for getting the ambient temperature for the specified location.
+     *
+     * @param location Specified location.
+     */
     private void runWeatherHttpClient(Location location) {
         if (!mRefreshing) {
             mWeatherTask.execute(location);
@@ -162,7 +177,7 @@ public class DashboardFragment extends Fragment {
     }
 
     /**
-     *
+     * Inner class, adapter for GridView.
      */
     private class DashboardGridAdapter extends BaseAdapter {
 
@@ -193,7 +208,7 @@ public class DashboardFragment extends Fragment {
             units.add(0);
             values.add("--:--:--");
             units.add("Duration");
-            values.add(false);
+            values.add(mOnRecordingCircuitListener.isRecordingCircuit());
             units.add("");
             values.add("-");
             units.add("Mi");
@@ -226,22 +241,22 @@ public class DashboardFragment extends Fragment {
                     view = sInflater.inflate(R.layout.item_dash_image, null);
                 }
 
-                ImageView imageView = (ImageView) valueViews.get(MEASUREMENTS[position]);
+                Button imageButton = (Button) valueViews.get(MEASUREMENTS[position]);
 
-                if (imageView == null) {
-                    imageView = (ImageView) view.findViewById(R.id.dash_image_button);
-                    valueViews.put(MEASUREMENTS[position], imageView);
+                if (imageButton == null) {
+                    imageButton = (Button) view.findViewById(R.id.dash_image_button);
+                    valueViews.put(MEASUREMENTS[position], imageButton);
                 }
 
-                Boolean recording = (Boolean) values.get(position);
+                flipImageButton();
 
-                if (!recording) {
-                    // Start button
-                    imageView.setImageResource(R.drawable.ic_location);
-                } else {
-                    // Stop button
-                    imageView.setImageResource(R.drawable.ic_location_marker);
-                }
+                imageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        flipImageButton();
+                        mOnRecordingCircuitListener.recordCircuit();
+                    }
+                });
 
             } else {
 
@@ -283,7 +298,24 @@ public class DashboardFragment extends Fragment {
         }
 
         /**
-         * @param temp
+         * Flips the image background of the Start/Finish Button.
+         */
+        private void flipImageButton() {
+            Button imageButton = (Button) valueViews.get(MEASUREMENTS[4]);
+
+            if (!mOnRecordingCircuitListener.isRecordingCircuit()) {
+                // Start button
+                imageButton.setBackground(getResources().getDrawable(R.drawable.ic_start));
+            } else {
+                // Finish button
+                imageButton.setBackground(getResources().getDrawable(R.drawable.ic_finish));
+            }
+        }
+
+        /**
+         * Updates the thermometer TextView with the specified temperature value in degrees F.
+         *
+         * @param temp Specified temperature.
          */
         private void updateThermometer(int temp) {
             values.remove(0);
@@ -295,6 +327,8 @@ public class DashboardFragment extends Fragment {
         }
 
         /**
+         * Updates the speedometer TextView with the specified speed value in MPH.
+         *
          * @param speed
          */
         private void updateSpeedometer(float speed) {
@@ -306,7 +340,9 @@ public class DashboardFragment extends Fragment {
         }
 
         /**
-         * @param azimuth
+         * Updates the magnetometer TextView with specified azimuth.
+         *
+         * @param azimuth Specified azimuth.
          */
         private void updateMagnetometer(float azimuth) {
             values.remove(2);
@@ -326,7 +362,9 @@ public class DashboardFragment extends Fragment {
         }
 
         /**
-         * @param duration
+         * Updates the duration TextView with the specified duration.
+         *
+         * @param duration Specified duration.
          */
         private void updateDuration(long duration) {
             values.remove(3);
@@ -336,7 +374,9 @@ public class DashboardFragment extends Fragment {
         }
 
         /**
-         * @param distance
+         * Updates the distance TextView with the sepcified distance.
+         *
+         * @param distance Specified distance.
          */
         private void updateDistance(float distance) {
             values.remove(5);
@@ -392,6 +432,7 @@ public class DashboardFragment extends Fragment {
 
         /**
          * Returns the specified Drawable re-sized to the specified width and height.
+         *
          * @param drawable
          * @param width
          * @param height
@@ -403,8 +444,6 @@ public class DashboardFragment extends Fragment {
             return new BitmapDrawable(getResources(), bitmapResized);
         }
     }
-
-    //TODO Write HTTP client for open source weather API
 
     /**
      * AsyncTask for HTTP Client calling open source weather api.

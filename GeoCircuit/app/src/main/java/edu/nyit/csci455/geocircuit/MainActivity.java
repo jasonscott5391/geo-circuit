@@ -606,8 +606,8 @@ public class MainActivity extends FragmentActivity implements
     }
 
     @Override
-    public void recordCircuit(boolean recording) {
-        mCircuitRecording = recording;
+    public void recordCircuit() {
+        mCircuitRecording = !mCircuitRecording;
     }
 
     @Override
@@ -635,7 +635,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     *
+     * Inner class, listener for clicks on items of Drawer ListView.
      */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
