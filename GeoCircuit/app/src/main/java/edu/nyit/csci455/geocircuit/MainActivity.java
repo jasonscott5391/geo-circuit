@@ -1,9 +1,11 @@
 package edu.nyit.csci455.geocircuit;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.hardware.Sensor;
@@ -22,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -31,9 +34,6 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import edu.nyit.csci455.geocircuit.Interface.Constants;
@@ -106,6 +106,8 @@ public class MainActivity extends FragmentActivity implements
 
     private boolean mCircuitRecording;
 
+    private ArrayList mGeoLocationList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,6 +146,8 @@ public class MainActivity extends FragmentActivity implements
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        mGeoLocationList = new ArrayList();
     }
 
     @Override
@@ -162,7 +166,6 @@ public class MainActivity extends FragmentActivity implements
                 Constants.DASHBOARD);
 
         mGeoDbHelper = GeoCircuitDbHelper.getInstance(this);
-//        populateDatabaseTest(mGeoDbHelper);
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_UI);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
 
@@ -335,79 +338,6 @@ public class MainActivity extends FragmentActivity implements
         }
     }
 
-    private void populateDatabaseTest(GeoCircuitDbHelper dbHelper) {
-        ArrayList testLocations = readInTestLocations();
-        for (Object location : testLocations) {
-            dbHelper.insertLocation((GeoLocation) location);
-        }
-
-        ArrayList testCircuits = readInTestCircuits();
-        for (Object circuit : testCircuits) {
-            dbHelper.insertCircuit((Circuit) circuit);
-        }
-    }
-
-    private ArrayList readInTestLocations() {
-        BufferedReader bufferedReader =
-                new BufferedReader(
-                        new InputStreamReader(
-                                this.getResources()
-                                        .openRawResource(R.raw.test_locations)));
-
-        ArrayList geoLocationList = new ArrayList();
-
-        try {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] parts = line.split(",");
-
-                GeoLocation geoLocation = new GeoLocation();
-                geoLocation.setCircuitId(Integer.parseInt(parts[1]));
-                geoLocation.setDate(Long.parseLong(parts[2]));
-                geoLocation.setAzimuth(Long.parseLong(parts[3]));
-                geoLocation.setSpeed(Float.parseFloat(parts[4]));
-                geoLocation.setLatitude(Float.parseFloat(parts[5]));
-                geoLocation.setLongitude(Float.parseFloat(parts[6]));
-
-
-                geoLocationList.add(geoLocation);
-            }
-
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-
-        return geoLocationList;
-    }
-
-    private ArrayList readInTestCircuits() {
-
-
-        BufferedReader bufferedReader =
-                new BufferedReader(
-                        new InputStreamReader(
-                                this.getResources()
-                                        .openRawResource(R.raw.test_circuits)));
-
-        ArrayList circuitList = new ArrayList();
-
-        try {
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] parts = line.split(",");
-
-                Circuit circuit = new Circuit();
-                circuit.setCircuitId(Integer.parseInt(parts[0]));
-                circuit.setCircuitName(parts[1]);
-                circuitList.add(circuit);
-            }
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-        }
-
-        return circuitList;
-    }
-
     // Define a DialogFragment that displays the error dialog
     public static class ErrorDialogFragment extends DialogFragment {
         // Global field to contain the error dialog
@@ -567,7 +497,7 @@ public class MainActivity extends FragmentActivity implements
                 geoLocation.setDate(System.currentTimeMillis());
                 geoLocation.setLatitude((float) location.getLatitude());
                 geoLocation.setLongitude((float) location.getLongitude());
-                mGeoDbHelper.insertLocation(geoLocation);
+                mGeoLocationList.add(geoLocation);
             }
         }
 
@@ -607,6 +537,10 @@ public class MainActivity extends FragmentActivity implements
 
     @Override
     public void recordCircuit() {
+        if (mCircuitRecording) {
+            getRecordedCircuitName();
+        }
+
         mCircuitRecording = !mCircuitRecording;
     }
 
@@ -632,6 +566,51 @@ public class MainActivity extends FragmentActivity implements
             location = mLocationClient.getLastLocation();
         }
         return location;
+    }
+
+    /**
+     * Prompts user to name the completed Circuit.
+     */
+    private void getRecordedCircuitName() {
+        final EditText circuitText = new EditText(this);
+
+        final AlertDialog alertDialog = new AlertDialog.Builder(this)
+                .setTitle("Circuit Finished!")
+                .setMessage("Please enter the name of the circuit...")
+                .setView(circuitText)
+                .setPositiveButton("Enter", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Circuit circuit = new Circuit();
+                        circuit.setCircuitName(circuitText.getText().toString());
+                        addCircuitAndLocations(circuit);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Bail!
+                        mGeoLocationList = new ArrayList();
+                    }
+                }).show();
+    }
+
+    /**
+     * Creates and inserts the specified Circuit and associated
+     * GeoLocations into the database.
+     *
+     * @param circuit Specified circuit.
+     */
+    private void addCircuitAndLocations(Circuit circuit) {
+        long circuitId = mGeoDbHelper.insertCircuit(circuit);
+
+        for (Object location : mGeoLocationList) {
+            GeoLocation geoLocation = (GeoLocation) location;
+            geoLocation.setCircuitId((int) circuitId);
+            mGeoDbHelper.insertLocation(geoLocation);
+        }
+
+        mGeoLocationList = new ArrayList();
     }
 
     /**

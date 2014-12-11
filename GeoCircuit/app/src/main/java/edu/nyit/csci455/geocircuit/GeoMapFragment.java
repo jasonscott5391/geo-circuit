@@ -228,10 +228,6 @@ public class GeoMapFragment extends MapFragment {
                     geoLocation.getLongitude());
 
             polylineOptions.add(latLng);
-            if (counter == circuits.size() / 2) {
-                midLatLng = new LatLng(geoLocation.getLatitude(),
-                        geoLocation.getLongitude());
-            }
 
             if (counter != 0 && counter != (circuits.size() - 1)) {
                 mGoogleMap.addMarker(new MarkerOptions()
@@ -251,10 +247,9 @@ public class GeoMapFragment extends MapFragment {
 
         avgSpeed = (totalSpeed / numCircuits);
 
-        int zoom = 14 - ((counter / 5) / 2);
         CameraPosition cameraPosition = CameraPosition.builder()
-                .target(midLatLng)
-                .zoom(zoom)
+                .target(startLatLng)
+                .zoom(15)
                 .build();
 
         mGoogleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));

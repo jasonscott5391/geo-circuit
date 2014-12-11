@@ -209,7 +209,7 @@ public class DashboardFragment extends Fragment {
             values.add("--:--:--");
             units.add("Duration");
             values.add(mOnRecordingCircuitListener.isRecordingCircuit());
-            units.add("");
+            units.add("Start");
             values.add("-");
             units.add("Mi");
 
@@ -242,19 +242,28 @@ public class DashboardFragment extends Fragment {
                 }
 
                 Button imageButton = (Button) valueViews.get(MEASUREMENTS[position]);
+                TextView textView = (TextView) unitViews.get(MEASUREMENTS[position]);
 
                 if (imageButton == null) {
-                    imageButton = (Button) view.findViewById(R.id.dash_image_button);
+                    imageButton = (Button) view.findViewById(R.id.dash_button);
                     valueViews.put(MEASUREMENTS[position], imageButton);
                 }
+
+                if (textView == null) {
+                    textView = (TextView) view.findViewById(R.id.dash_button_text);
+                    unitViews.put(MEASUREMENTS[position], textView);
+                }
+
+                textView.setTextSize(36);
+                textView.setText(String.valueOf(units.get(position)));
 
                 flipImageButton();
 
                 imageButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        flipImageButton();
                         mOnRecordingCircuitListener.recordCircuit();
+                        flipImageButton();
                     }
                 });
 
@@ -302,13 +311,16 @@ public class DashboardFragment extends Fragment {
          */
         private void flipImageButton() {
             Button imageButton = (Button) valueViews.get(MEASUREMENTS[4]);
+            TextView textView = (TextView) unitViews.get(MEASUREMENTS[4]);
 
             if (!mOnRecordingCircuitListener.isRecordingCircuit()) {
                 // Start button
                 imageButton.setBackground(getResources().getDrawable(R.drawable.ic_start));
+                textView.setText("Start");
             } else {
                 // Finish button
                 imageButton.setBackground(getResources().getDrawable(R.drawable.ic_finish));
+                textView.setText("Finish");
             }
         }
 

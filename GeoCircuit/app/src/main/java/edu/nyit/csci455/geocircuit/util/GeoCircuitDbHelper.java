@@ -160,33 +160,33 @@ public class GeoCircuitDbHelper extends SQLiteOpenHelper {
      * Inserts the specified circuit with the specified name
      * into the database.
      *
-     * @param circuit     Specified circuit.
+     * @param circuit Specified circuit.
      */
-    public void insertCircuit(Circuit circuit) {
+    public long insertCircuit(Circuit circuit) {
+        long circuitID = -1;
         try {
-            insertCircuitIntoDb(circuit);
+            circuitID = insertCircuitIntoDb(circuit);
         } catch (SQLException e) {
             //TODO (jasonscott) Log any errors.
-            System.err.println(e.getMessage());
         }
+        return circuitID;
     }
 
     /**
      * Inserts the specified circuit with the specified name
      * into the circuits table using insert or throw.
      *
-     * @param circuit     Specified circuit.
+     * @param circuit Specified circuit.
      * @throws SQLiteException For errors inserting into the table.
      */
-    private void insertCircuitIntoDb(Circuit circuit) throws SQLiteException {
+    private long insertCircuitIntoDb(Circuit circuit) throws SQLiteException {
 
         ContentValues contentValues = new ContentValues();
 
-//        contentValues.put(Constants.CIRCUIT_ID, circuit.getCircuitId());
         contentValues.put(Constants.CIRCUIT_NAME, circuit.getCircuitName());
 
 //      getWritableDatabase(Constants.SECRET)
-        getWritableDatabase()
+        return getWritableDatabase()
                 .insertOrThrow(Constants.CIRCUITS_TABLE,
                         null,
                         contentValues);
