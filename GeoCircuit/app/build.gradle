@@ -6,8 +6,8 @@ android {
 
     defaultConfig {
         applicationId "edu.nyit.csci455.geocircuit"
-        minSdkVersion 15
-        targetSdkVersion 19
+        minSdkVersion 16
+        targetSdkVersion 20
         versionCode 1
         versionName "1.0"
     }

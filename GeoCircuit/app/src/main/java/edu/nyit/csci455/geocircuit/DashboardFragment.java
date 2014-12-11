@@ -1,7 +1,10 @@
 package edu.nyit.csci455.geocircuit;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -108,7 +111,7 @@ public class DashboardFragment extends Fragment {
      * @param temp
      */
     public void updateTemperature(double temp) {
-        int tempDegF = (int) Math.round(((temp - 273) * (9/5)) + 32);
+        int tempDegF = (int) Math.round(((temp - 273) * (9 / 5)) + 32);
 
         mDashGridAdapter.updateThermometer(tempDegF);
     }
@@ -266,6 +269,16 @@ public class DashboardFragment extends Fragment {
                 unitText.setText(String.valueOf(units.get(position)));
             }
 
+            int width = (mDimensions.x / 3);
+            int height = ((mDimensions.y / 3) / 4);
+
+            view.setBackground(
+                    resizeDrawable(
+                            getResources()
+                                    .getDrawable(R.drawable.bg_grid),
+                            width,
+                            height));
+
             return view;
         }
 
@@ -375,6 +388,19 @@ public class DashboardFragment extends Fragment {
             }
 
             return "";
+        }
+
+        /**
+         * Returns the specified Drawable re-sized to the specified width and height.
+         * @param drawable
+         * @param width
+         * @param height
+         * @return
+         */
+        private Drawable resizeDrawable(Drawable drawable, int width, int height) {
+            Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(bitmap, width, height, false);
+            return new BitmapDrawable(getResources(), bitmapResized);
         }
     }
 
