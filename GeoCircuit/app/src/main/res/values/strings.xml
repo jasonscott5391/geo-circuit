@@ -34,7 +34,11 @@
     <string name="places_path">/maps/api/place/nearbysearch/json</string>
     <string name="places_key">AIzaSyAwfs7kihRkNxuSKNiC3UZBSqip7_fqq_I</string>
 
-   <!-- Strings for testing -->
+    <!-- Strings for Open Weather Map API -->
+    <string name="weather_authority">api.openweathermap.org</string>
+    <string name="weather_path">/data/2.5/weather</string>
+
+    <!-- Strings for testing -->
     <string name="test_circuit_date">10/22/14 </string>
     <string name="test_circuit_time">8:43 AM - 9:02 AM</string>
     <string name="test_circuit_name">Commute to work</string>

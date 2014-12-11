@@ -212,7 +212,7 @@ public class NearMeFragment extends Fragment {
         protected ArrayList<Place> doInBackground(Location... params) {
             ArrayList<Place> places = new ArrayList<Place>();
 
-            String result = null;
+            String result;
             InputStream inputStream = null;
 
             try {

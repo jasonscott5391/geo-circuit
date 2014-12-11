@@ -3,6 +3,7 @@ package edu.nyit.csci455.geocircuit;
 import android.app.Activity;
 import android.graphics.Point;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,15 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -36,6 +46,12 @@ public class DashboardFragment extends Fragment {
 
     private Point mDimensions;
 
+    private boolean mRefreshing = false;
+
+    private WeatherAsyncTask mWeatherTask;
+
+    private Location mStartLocation;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -54,6 +70,7 @@ public class DashboardFragment extends Fragment {
         sInflater = getActivity().getLayoutInflater();
         mDimensions = new Point();
         getActivity().getWindowManager().getDefaultDisplay().getSize(mDimensions);
+        mWeatherTask = new WeatherAsyncTask();
     }
 
     @Override
@@ -76,11 +93,24 @@ public class DashboardFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (mStartLocation == null) {
+            mStartLocation = mOnRecordingCircuitListener.getLastLocation();
+        }
+
+        runWeatherHttpClient(mStartLocation);
+    }
+
     /**
      * @param temp
      */
-    public void updateTemperature(float temp) {
-        mDashGridAdapter.updateThermometer(temp);
+    public void updateTemperature(double temp) {
+        int tempDegF = (int) Math.round(((temp - 273) * (9/5)) + 32);
+
+        mDashGridAdapter.updateThermometer(tempDegF);
     }
 
     /**
@@ -118,6 +148,14 @@ public class DashboardFragment extends Fragment {
         public void recordCircuit(boolean recording);
 
         public boolean isRecordingCircuit();
+
+        public Location getLastLocation();
+    }
+
+    private void runWeatherHttpClient(Location location) {
+        if (!mRefreshing) {
+            mWeatherTask.execute(location);
+        }
     }
 
     /**
@@ -128,7 +166,9 @@ public class DashboardFragment extends Fragment {
         private final String[] MEASUREMENTS = {"THERMOMETER", "SPEEDOMETER", "MAGNETOMETER",
                 "DURATION", "START/STOP", "DISTANCE"};
 
-        private HashMap views;
+        private HashMap valueViews;
+
+        private HashMap unitViews;
 
         private ArrayList values;
 
@@ -136,21 +176,23 @@ public class DashboardFragment extends Fragment {
 
         private DashboardGridAdapter() {
 
-            views = new HashMap();
+            valueViews = new HashMap();
+            unitViews = new HashMap();
+
             values = new ArrayList();
             units = new ArrayList();
 
-            values.add(0.0);
-            units.add("\u2109");
-            values.add(0.0);
-            units.add("MPH");
-            values.add(0.0);
-            units.add("");
+            values.add("-\u2109");
+            units.add("Ambient");
             values.add(0);
+            units.add("MPH");
+            values.add("-");
+            units.add(0);
+            values.add("--:--:--");
             units.add("Duration");
             values.add(false);
             units.add("");
-            values.add(0);
+            values.add("-");
             units.add("Mi");
 
 
@@ -181,11 +223,11 @@ public class DashboardFragment extends Fragment {
                     view = sInflater.inflate(R.layout.item_dash_image, null);
                 }
 
-                ImageView imageView = (ImageView) views.get(MEASUREMENTS[position]);
+                ImageView imageView = (ImageView) valueViews.get(MEASUREMENTS[position]);
 
                 if (imageView == null) {
                     imageView = (ImageView) view.findViewById(R.id.dash_image_button);
-                    views.put(MEASUREMENTS[position], imageView);
+                    valueViews.put(MEASUREMENTS[position], imageView);
                 }
 
                 Boolean recording = (Boolean) values.get(position);
@@ -204,14 +246,18 @@ public class DashboardFragment extends Fragment {
                     view = sInflater.inflate(R.layout.item_dash_text, null);
                 }
 
-                TextView valueText = (TextView) views.get(MEASUREMENTS[position]);
+                TextView valueText = (TextView) valueViews.get(MEASUREMENTS[position]);
+                TextView unitText = (TextView) unitViews.get(MEASUREMENTS[position]);
 
                 if (valueText == null) {
                     valueText = (TextView) view.findViewById(R.id.dash_text_value);
-                    views.put(MEASUREMENTS[position], valueText);
+                    valueViews.put(MEASUREMENTS[position], valueText);
                 }
 
-                TextView unitText = (TextView) view.findViewById(R.id.dash_text_units);
+                if (unitText == null) {
+                    unitText = (TextView) view.findViewById(R.id.dash_text_units);
+                    unitViews.put(MEASUREMENTS[position], unitText);
+                }
 
                 valueText.setTextSize(48);
                 valueText.setText(String.valueOf(values.get(position)));
@@ -226,11 +272,13 @@ public class DashboardFragment extends Fragment {
         /**
          * @param temp
          */
-        private void updateThermometer(float temp) {
+        private void updateThermometer(int temp) {
             values.remove(0);
             values.add(0, temp);
-            TextView textView = (TextView) views.get(MEASUREMENTS[0]);
-            textView.setText(String.valueOf(temp));
+
+            TextView textView = (TextView) valueViews.get(MEASUREMENTS[0]);
+            String tempString = temp + "\u2109";
+            textView.setText(tempString);
         }
 
         /**
@@ -239,8 +287,8 @@ public class DashboardFragment extends Fragment {
         private void updateSpeedometer(float speed) {
             values.remove(1);
             values.add(1, speed);
-            double speedMph = 2.2369362920544 * speed;
-            TextView textView = (TextView) views.get(MEASUREMENTS[1]);
+            int speedMph = (int) Math.round(2.2369362920544 * speed);
+            TextView textView = (TextView) valueViews.get(MEASUREMENTS[1]);
             textView.setText(String.valueOf(speedMph));
         }
 
@@ -251,8 +299,17 @@ public class DashboardFragment extends Fragment {
             values.remove(2);
             values.add(2, azimuth);
 
-            TextView textView = (TextView) views.get(MEASUREMENTS[2]);
-            textView.setText(getCompassHeading(azimuth));
+            float azimuthDegrees = (float) Math.toDegrees(azimuth);
+
+            if (azimuthDegrees < 0.0f) {
+                azimuthDegrees += 360.0f;
+            }
+
+            TextView textView = (TextView) valueViews.get(MEASUREMENTS[2]);
+            TextView unitView = (TextView) unitViews.get(MEASUREMENTS[2]);
+
+            textView.setText(getCompassHeading(azimuthDegrees));
+            unitView.setText(String.valueOf(Math.round(azimuthDegrees)) + "\u00B0");
         }
 
         /**
@@ -261,7 +318,7 @@ public class DashboardFragment extends Fragment {
         private void updateDuration(long duration) {
             values.remove(3);
             values.add(3, duration);
-            TextView textView = (TextView) views.get(MEASUREMENTS[3]);
+            TextView textView = (TextView) valueViews.get(MEASUREMENTS[3]);
             textView.setText(String.valueOf(duration));
         }
 
@@ -271,7 +328,7 @@ public class DashboardFragment extends Fragment {
         private void updateDistance(float distance) {
             values.remove(5);
             values.add(5, distance);
-            TextView textView = (TextView) views.get(MEASUREMENTS[5]);
+            TextView textView = (TextView) valueViews.get(MEASUREMENTS[5]);
             textView.setText(String.valueOf(distance));
         }
 
@@ -279,16 +336,11 @@ public class DashboardFragment extends Fragment {
          * Returns the compass heading of a specified
          * azimuth.
          *
-         * @param azimuth Specified azimuth.
+         * @param azimuthDegrees Specified azimuth.
          * @return String representation of compass heading.
          */
-        private String getCompassHeading(float azimuth) {
-            float azimuthDegrees = (float) Math.toDegrees(azimuth);
+        private String getCompassHeading(float azimuthDegrees) {
 
-            if (azimuthDegrees < 0.0f) {
-                azimuthDegrees += 360.0f;
-            }
-            
             if (azimuthDegrees >= 0 && azimuthDegrees < 30
                     || azimuthDegrees >= 330 && azimuthDegrees < 360) {
                 return "N";
@@ -327,14 +379,116 @@ public class DashboardFragment extends Fragment {
     }
 
     //TODO Write HTTP client for open source weather API
+
     /**
      * AsyncTask for HTTP Client calling open source weather api.
      */
     private class WeatherAsyncTask extends AsyncTask<Location, Integer, Double> {
 
+        private Location location;
+
+        @Override
+        protected void onPreExecute() {
+            mRefreshing = true;
+        }
+
         @Override
         protected Double doInBackground(Location... params) {
-            return null;
+            Double temperature = null;
+
+            String result;
+            InputStream inputStream;
+
+            try {
+                location = params[0];
+
+                Uri uri = new Uri.Builder()
+                        .scheme("http")
+                        .authority(getResources().getString(R.string.weather_authority))
+                        .path(getResources().getString(R.string.weather_path))
+                        .appendQueryParameter("lat", String.valueOf(location.getLatitude()))
+                        .appendQueryParameter("lon", String.valueOf(location.getLongitude()))
+                        .build();
+
+                URL url = new URL(uri.toString());
+
+                inputStream = connect(url);
+
+                BufferedReader bufferedReader = new BufferedReader(
+                        new InputStreamReader(inputStream, "UTF-8"));
+                StringBuilder stringBuilder = new StringBuilder();
+
+                String line;
+
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line + "\n");
+                }
+
+                result = stringBuilder.toString();
+
+                temperature = getTemperatureFromJson(result);
+
+            } catch (Exception e) {
+
+            }
+
+            return temperature;
+        }
+
+        @Override
+        protected void onPostExecute(Double result) {
+            if (result != null) {
+                updateTemperature(result);
+            }
+
+            mRefreshing = false;
+        }
+
+        @Override
+        protected void onCancelled(Double result) {
+            mRefreshing = false;
+        }
+
+        /**
+         * Returns an InputStream from an HTTP connection to the
+         * specified URL.
+         *
+         * @param url Specified URL.
+         * @return InputStream from HTTP connection.
+         * @throws java.io.IOException
+         */
+        private InputStream connect(URL url) throws IOException {
+            InputStream inputStream;
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setReadTimeout(5000 /* milliseconds */);
+            conn.setConnectTimeout(5000 /* milliseconds */);
+            conn.setRequestMethod("GET");
+            conn.setDoInput(true);
+            conn.connect();
+
+            inputStream = conn.getInputStream();
+
+            return inputStream;
+        }
+
+        /**
+         * Returns temperature in Kelvins parsed from the specified JSON.
+         *
+         * @param json Specified JSON
+         * @return Double of temperature in Kelvin.
+         * @throws JSONException
+         * @throws IOException
+         */
+        private Double getTemperatureFromJson(String json) throws JSONException, IOException {
+            Double temperature = null;
+
+            if (json != null) {
+                JSONObject jsonObject = new JSONObject(json);
+                temperature = jsonObject.getJSONObject("main").getDouble("temp");
+            }
+
+            return temperature;
         }
     }
 
