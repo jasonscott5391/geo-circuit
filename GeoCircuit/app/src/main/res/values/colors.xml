@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="geo_red">#FF0000</color>
+
+    <color name="textcolor_normal">#00FFFF</color>       <!--  Normal speed color -->
+    <color name="backcolor_normal">#FF000000</color>     <!--  Background color -->
+
+    <color name="textcolor_overspeed">#ffff0000</color>   <!-- Change text color to red for speeds above 55 Mph -->
+    <color name="backcolor_overspeed">#ff030000</color>
+
+</resources>
