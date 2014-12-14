@@ -106,9 +106,9 @@ public class NearMeFragment extends Fragment {
         mPlacesList = (ListView) view.findViewById(R.id.list_place);
 
         mPlacesListAdapter = new PlacesListAdapter();
-        mPlacesList.setAdapter(mPlacesListAdapter);
 
         mPlacesList.addHeaderView(mPlacesListHeader, null, false);
+        mPlacesList.setAdapter(mPlacesListAdapter);
 
         mPlacesListHeaderText.setText(mPlacesListAdapter.getCount() + " Places nearby");
 

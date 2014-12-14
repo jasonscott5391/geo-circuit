@@ -95,10 +95,10 @@ public class CircuitFragment extends Fragment {
         mCircuitList = (ListView) view.findViewById(R.id.list_circuit);
 
         mCircuitListAdapter = new CircuitListAdapter();
-        mCircuitList.setAdapter(mCircuitListAdapter);
 
         mCircuitList.addHeaderView(mCircuitListHeader, null, false);
 
+        mCircuitList.setAdapter(mCircuitListAdapter);
         mCircuitListHeaderText.setText(mCircuitListAdapter.getCount() + " Circuit(s)");
 
         mCircuitListOnItemClickListener = new CircuitListOnItemClickListener();

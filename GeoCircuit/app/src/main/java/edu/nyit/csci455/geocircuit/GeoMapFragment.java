@@ -229,17 +229,6 @@ public class GeoMapFragment extends MapFragment {
 
             polylineOptions.add(latLng);
 
-            if (counter != 0 && counter != (circuits.size() - 1)) {
-                mGoogleMap.addMarker(new MarkerOptions()
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker))
-                        .rotation(geoLocation.getAzimuth())
-                        .position(latLng)
-                        .flat(true)
-                        .title("Checkpoint " + (counter))
-                        .snippet("Speed: " + geoLocation.getSpeed()
-                                + " Time: " + geoLocation.calculateTime(startGeoLocation)));
-            }
-
             totalSpeed += geoLocation.getSpeed();
 
             counter++;

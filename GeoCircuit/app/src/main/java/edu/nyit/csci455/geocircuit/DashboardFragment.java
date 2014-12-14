@@ -334,8 +334,8 @@ public class DashboardFragment extends Fragment {
             values.add(0, temp);
 
             TextView textView = (TextView) valueViews.get(MEASUREMENTS[0]);
-            String tempString = temp + "\u2109";
-            textView.setText(tempString);
+            textView.setText((temp) + "\u2109");
+
         }
 
         /**
